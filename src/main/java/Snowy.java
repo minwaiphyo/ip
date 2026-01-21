@@ -7,10 +7,12 @@ public class Snowy {
         String[] tasks = new String[100];
         int taskCount = 0;
 
+        String LINE = "____________________________________________________________";
+        String INDENT = "     ";
 
         // Greets user
-        System.out.println("""
-                ____________________________________________________________
+        System.out.println(LINE + "\n" +
+                """
                 Woof woof! I'm Snowy!
                   /^-----^\\
                  V  o o  |\s
@@ -21,13 +23,10 @@ public class Snowy {
                    |     \\     )
                    || (___\\====
                 What can I do for you? :3
-                ____________________________________________________________
-                
-                """);
+                """ + LINE);
 
         while (true) {
             String input = scanner.nextLine();
-
 
             // User terminating
             if (input.equals("bye")) {
