@@ -1,10 +1,11 @@
 import java.util.Scanner;
+import java.util.ArrayList;
 
 public class Snowy {
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
-        Task[] tasks = new Task[100];
+        ArrayList<Task> tasks = new ArrayList<>();
         int taskCount = 0;
 
         String LINE = "____________________________________________________________";
@@ -42,7 +43,7 @@ public class Snowy {
                     System.out.println(INDENT + LINE);
                     System.out.println(INDENT + "Here are the tasks in your list:");
                     for (int i = 0; i < taskCount; i++) {
-                        Task task = tasks[i];
+                        Task task = tasks.get(i);
                         System.out.println(INDENT + (i + 1) + "." + task.printDetailed());
                     }
                     System.out.println(INDENT + LINE);
@@ -62,10 +63,10 @@ public class Snowy {
                         throw new SnowyException("Woof woof! That number doesn't exist!");
                     }
 
-                    tasks[taskIndex].markAsNotDone();
+                    tasks.get(taskIndex).markAsNotDone();
                     System.out.println(INDENT + LINE);
                     System.out.println(INDENT + "Ok, I've marked this task as not done yet:");
-                    System.out.println(INDENT + tasks[taskIndex].printDetailed());
+                    System.out.println(INDENT + tasks.get(taskIndex).printDetailed());
                     System.out.println(INDENT + LINE);
 
 
@@ -84,10 +85,10 @@ public class Snowy {
                         throw new SnowyException("Woof woof! That task number doesn't exist!");
                     }
 
-                    tasks[taskIndex].markAsDone();
+                    tasks.get(taskIndex).markAsDone();
                     System.out.println(INDENT + LINE);
                     System.out.println(INDENT + "Nice! I've marked this task as done:");
-                    System.out.println(INDENT + tasks[taskIndex].printDetailed());
+                    System.out.println(INDENT + tasks.get(taskIndex).printDetailed());
                     System.out.println(INDENT + LINE);
                     // Creates todo
                 } else if (input.startsWith("todo ")) {
@@ -96,7 +97,7 @@ public class Snowy {
                         throw new SnowyException("Woof woof! The description of a ToDo cannot be empty!");
                     }
                     ToDo todo = new ToDo(description);
-                    tasks[taskCount] = todo;
+                    tasks.add(taskCount, todo);
                     taskCount++;
 
                     System.out.println(INDENT + LINE);
@@ -129,7 +130,7 @@ public class Snowy {
                     String by = parts[1];
 
                     Deadline deadline = new Deadline(description, by);
-                    tasks[taskCount] = deadline;
+                    tasks.add(taskCount, deadline);
                     taskCount++;
 
                     System.out.println(INDENT + LINE);
@@ -162,7 +163,7 @@ public class Snowy {
                     String to = parts[2];
 
                     Event event = new Event(description, from, to);
-                    tasks[taskCount] = event;
+                    tasks.add(taskCount, event);
                     taskCount++;
 
                     System.out.println(INDENT + LINE);
@@ -172,6 +173,30 @@ public class Snowy {
                     System.out.println(INDENT + LINE);
                 } else if (input.equals("event")) {
                     throw new SnowyException("Woof woof! The description of an event cannot be empty!");
+
+                } else if (input.startsWith("delete ") || input.equals("delete")) {
+
+                    // Handles empty taskIndex
+                    if (input.length() <= 7) {
+                        throw new SnowyException("Woof woof! Please specify the index  of the task to delete!");
+                    }
+
+                    int taskIndex = Integer.parseInt(input.substring(7)) - 1;
+
+                    // Handles invalid taskIndex
+                    if (taskIndex < 0 || taskIndex >= taskCount) {
+                        throw new SnowyException("Woof woof! That number doesn't exist!");
+                    }
+
+                    Task task = tasks.get(taskIndex);
+                    tasks.remove(taskIndex);
+                    taskCount--;
+
+                    System.out.println(INDENT + LINE);
+                    System.out.println(INDENT + "Noted. I've removed this task:");
+                    System.out.println(INDENT + task.printDetailed());
+                    System.out.println(INDENT + "Now you have " + taskCount + " tasks in the list.");
+
                 } else {
                     throw new SnowyException("""
                         *Sad Snowy noises* I don't understand that command! Try 'todo', 'deadline', 'event', 'list', 'mark', or 'unmark'!
