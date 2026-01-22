@@ -12,19 +12,18 @@ public class Snowy {
 
 
         // Greets user
-        System.out.println(LINE + "\n" +
-                """
-                Woof woof! I'm Snowy!
-                  /^-----^\\
-                 V  o o  |\s
-                  |  Y  | \s
-                   \\ Q /  \s
-                   / - \\  \s
-                   |    \\
-                   |     \\     )
-                   || (___\\====
-                What can I do for you? :3
-                """ + LINE);
+        System.out.println(LINE);
+        System.out.println("Woof woof! I'm Snowy!");
+        System.out.println("  /^-----^\\");
+        System.out.println(" V  o o  |");
+        System.out.println("  |  Y  |");
+        System.out.println("   \\ Q /");
+        System.out.println("   / - \\");
+        System.out.println("   |    \\");
+        System.out.println("   |     \\     )");
+        System.out.println("   || (___\\====");
+        System.out.println("What can I do for you? :3");
+        System.out.println(LINE);
 
         while (true) {
             String input = scanner.nextLine();
