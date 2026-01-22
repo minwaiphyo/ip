@@ -4,7 +4,7 @@ public class Snowy {
     public static void main(String[] args) {
 
         Scanner scanner = new Scanner(System.in);
-        String[] tasks = new String[100];
+        Task[] tasks = new Task[100];
         int taskCount = 0;
 
         String LINE = "____________________________________________________________";
@@ -38,20 +38,37 @@ public class Snowy {
 
             // Lists out tasks
             if (input.equals("list")) {
-                System.out.println("     _______________________________________________________");
+                System.out.println(INDENT + LINE);
+                System.out.println("Here are the tasks in your list:");
                 for (int i = 0; i < taskCount; i++) {
-                    System.out.println("     " + (i + 1) + ". " + tasks[i]);
+                    Task task = tasks[i];
+                    System.out.println(INDENT + (i + 1) + "." + task);
                 }
-                System.out.println("     _______________________________________________________");
-            } else {
-                // Adds user input to tasks
-                tasks[taskCount] = input;
+                System.out.println(INDENT + LINE);
+
+                // Unmark task
+            } else if (input.startsWith("unmark ")) {
+                int taskIndex = Integer.parseInt(input.substring(7)) - 1;
+                tasks[taskIndex].markAsNotDone();
+                System.out.println(LINE + "\n" + "Ok, I've marked this task as not done yet:");
+                System.out.println("   " + tasks[taskIndex]);
+
+                //Mark task
+            } else if (input.startsWith("mark ")) {
+                int taskIndex = Integer.parseInt(input.substring(5)) - 1;
+                tasks[taskIndex].markAsDone();
+                System.out.println(LINE + "\n" + "Nice! I've marked this task as done:");
+                System.out.println("   " + tasks[taskIndex]);
+
+                //Adds user input to tasks
+            }else {
+                tasks[taskCount] = new Task(input);
                 taskCount++;
 
                 // Confirms addition of new task
-                System.out.println("     _______________________________________________________");
+                System.out.println(INDENT + LINE);
                 System.out.println("     " + "added: " +  input);
-                System.out.println("     _______________________________________________________");
+                System.out.println(INDENT + LINE);
             }
         }
         scanner.close();
