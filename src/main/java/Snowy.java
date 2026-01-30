@@ -4,6 +4,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 public class Snowy {
     private static final String FILEPATH = "data/tasks.txt";
@@ -134,7 +138,7 @@ public class Snowy {
                         throw new SnowyException("Woof! The description of a deadline cannot be empty!");
                     }
                     if (!details.contains(" /by ")) {
-                        throw new SnowyException("Woof woof! Please use the format: deadline [task] /by [date]");
+                        throw new SnowyException("Woof woof! Please use the format: deadline [task] /by [yyyy-MM-dd HHmm]");
                     }
 
                     String[] parts = details.split(" /by ");
@@ -144,9 +148,10 @@ public class Snowy {
                     }
 
                     String description = parts[0];
-                    String by = parts[1];
-
+                    String byString = parts[1].trim();
+                    LocalDateTime by = parseDateTime(byString);
                     Deadline deadline = new Deadline(description, by);
+
                     ArrayList<Task> tasks = loadTasks(FILEPATH);
                     tasks.add(deadline);
                     saveTasks(tasks, FILEPATH);
@@ -167,7 +172,7 @@ public class Snowy {
                         throw new SnowyException("Woof! The description of an event cannot be empty!");
                     }
                     if (!details.contains(" /from ") || !details.contains(" /to ")) {
-                        throw new SnowyException("Woof woof! Please use the format: event [task] /from [start] /to [end]");
+                        throw new SnowyException("Woof woof! Please use the format: event [task] /from [yyyy-MM-dd HHmm] /to [yyyy-MM-dd HHmm]");
                     }
 
                     String[] parts = details.split(" /from | /to ");
@@ -177,10 +182,13 @@ public class Snowy {
                     }
 
                     String description = parts[0];
-                    String from = parts[1];
-                    String to = parts[2];
+                    String fromString = parts[1].trim();
+                    String toString = parts[2].trim();
+                    LocalDateTime from = parseDateTime(fromString);
+                    LocalDateTime to = parseDateTime(toString);
 
                     Event event = new Event(description, from, to);
+
                     ArrayList<Task> tasks = loadTasks(FILEPATH);
                     tasks.add(event);
                     saveTasks(tasks, FILEPATH);
@@ -221,9 +229,48 @@ public class Snowy {
                     System.out.println(INDENT + "Now you have " + tasks.size() + " tasks in the list.");
                     System.out.println(INDENT + LINE);
 
+
+                // Strech goal: "on" command - print deadlines/events occurring on a specific date
+                } else if (input.startsWith("on ")) {
+                    String dateString = input.substring(3).trim();
+
+                    if (dateString.isEmpty()) {
+                        throw new SnowyException("Woof! Please specify a date in date in yyyy-MM-dd format!");
+                    }
+
+                    LocalDate targetDate = parseDate(dateString);
+                    ArrayList<Task> tasks = loadTasks(FILEPATH);
+                    ArrayList<Task> matchingTasks = new ArrayList<>();
+
+                    for (Task task : tasks) {
+                        if (task instanceof Deadline deadline) {
+                            if (deadline.getBy().toLocalDate().equals(targetDate)) {
+                                matchingTasks.add(task);
+                            }
+                        } else if (task instanceof Event event) {
+                            LocalDate fromDate = event.getStart().toLocalDate();
+                            LocalDate toDate = event.getEnd().toLocalDate();
+                            if (!targetDate.isBefore(fromDate) && !targetDate.isAfter(toDate)) {
+                                matchingTasks.add(task);
+                            }
+                        }
+                    }
+
+                    System.out.println(INDENT + LINE);
+                    if (matchingTasks.isEmpty()) {
+                        System.out.println(INDENT + "No tasks found on " + targetDate.format(DateTimeFormatter.ofPattern("MMM dd yyyy")));
+                    } else {
+                        System.out.println(INDENT + "Tasks on " + targetDate.format(DateTimeFormatter.ofPattern("MMM dd yyyy")) + ":");
+                        for (int i = 0; i < matchingTasks.size(); i++) {
+                            System.out.println(INDENT + (i + 1) + "." + matchingTasks.get(i).printDetailed());
+                        }
+                    }
+                    System.out.println(INDENT + LINE);
+                } else if (input.equals("on")){
+                    throw new SnowyException("Woof! Please specify a date in yyyy-MM-dd format!");
                 } else {
                     throw new SnowyException("""
-                        *Sad Snowy noises* I don't understand that command! Try 'todo', 'deadline', 'event', 'list', 'mark', or 'unmark'!
+                        *Sad Snowy noises* I don't understand that command! Try 'todo', 'deadline', 'event', 'list', 'mark', 'unmark', 'delete', or 'on'!
                         """);
                 }
             } catch(SnowyException e) {
@@ -238,6 +285,9 @@ public class Snowy {
                 System.out.println(INDENT + LINE);
                 System.out.println(INDENT + "Woof woof! Something went wrong with parsing your command. Please check the format");
                 System.out.println(INDENT + LINE);
+            } catch (DateTimeParseException e) {
+                System.out.println(INDENT + LINE);
+                System.out.println(INDENT + "Woof! Invalid date format. Please use yyyy-MM-dd HHmm (e.g., 2019-12-02 1800)");
             }
         }
         scanner.close();
@@ -335,12 +385,15 @@ public class Snowy {
                     break;
                 case "D":
                     if (parts.length >= 4) {
-                        task = new Deadline(description, parts[3]);
+                        LocalDateTime by = LocalDateTime.parse(parts[3]);
+                        task = new Deadline(description, by);
                     }
                     break;
                 case "E":
                     if (parts.length >= 5) {
-                        task = new Event(description, parts[3], parts[4]);
+                        LocalDateTime from = LocalDateTime.parse(parts[3]);
+                        LocalDateTime to = LocalDateTime.parse(parts[4]);
+                        task = new Event(description, from, to);
                     }
                     break;
             }
@@ -369,13 +422,34 @@ public class Snowy {
             return "T | " + isDone + " | " + task.description;
         } else if (task instanceof Deadline) {
             Deadline deadline = (Deadline) task;
-            return "D | " + isDone + " | " + task.description + " | " + deadline.end;
+            return "D | " + isDone + " | " + task.description + " | " + deadline.getBy().toString();
         } else if (task instanceof Event) {
             Event event = (Event) task;
-            return "E | " + isDone + " | " + task.description + " | " + event.start + " | " + event.end;
+            return "E | " + isDone + " | " + task.description + " | " + event.getStart().toString() + " | " + event.getEnd().toString();
         }
-
         return "";
+    }
+
+    /**
+     * Parse a date-time string into LocalDateTime
+     * Accepts format: yyyy-MM-dd HHmm
+     * @param dateTimeString The date-time string to parse
+     * @return LocalDateTime object
+     */
+    private static LocalDateTime parseDateTime(String dateTimeString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HHmm");
+        return LocalDateTime.parse(dateTimeString, formatter);
+    }
+
+    /**
+     * Parse a date string into LocalDate
+     * Accepts format: yyyy-MM-dd
+     * @param dateString The date string to parse
+     * @return LocalDate object
+     */
+    private static LocalDate parseDate(String dateString) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        return LocalDate.parse(dateString, formatter);
     }
 
 
