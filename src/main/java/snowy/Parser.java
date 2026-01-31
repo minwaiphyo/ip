@@ -5,7 +5,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 /**
- * Handles parsing of user commands
+ * Parses user commands and extracts relevant information.
+ * This class contains static methods to interpret user input strings and
+ * extract command types, task indices, descriptions, dates, and other
+ * parameters needed by the application. It centralizes all parsing logic
+ * and input validation related to command syntax.
  */
 public class Parser {
 
@@ -149,7 +153,7 @@ public class Parser {
     }
 
     /**
-     * Parse a date-time string into LocalDateTime
+     * Parses a date-time string into LocalDateTime
      * Accepts format: yyyy-MM-dd HHmm
      * @param dateTimeString The date-time string to parse
      * @return LocalDateTime object
@@ -160,7 +164,7 @@ public class Parser {
     }
 
     /**
-     * Parse a date string into LocalDate
+     * Parses a date string into LocalDate
      * Accepts format: yyyy-MM-dd
      * @param dateString The date string to parse
      * @return LocalDate object

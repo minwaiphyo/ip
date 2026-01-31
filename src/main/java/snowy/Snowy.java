@@ -5,6 +5,15 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
+
+/**
+ * Main class for the Snowy chatbot.
+ * Snowy is a task manager that helps users keep track of todos, deadlines,
+ * and events. It provides a seamless command-line interface for users to add, delete,
+ * mark, and view tasks. Tasks are persisted to a file for future sessions.
+ * This class coordinates the interaction between the UI, Storage, TaskList,
+ * and Parser components.
+ */
 public class Snowy {
     private static final String FILEPATH = "data/tasks.txt";
     private Storage storage;

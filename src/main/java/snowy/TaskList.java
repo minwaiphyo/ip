@@ -4,7 +4,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 /**
- * Manages the list of tasks
+ * Manages the task list for the Snowy chatbot.
+ * This class encapsulates an ArrayList of tasks and provides operations
+ * to add, delete, mark, unmark, and retrieve tasks. It also handles
+ * validation of task indices and provides specific queries such as
+ * finding tasks occurring on a specific date.
  */
 public class TaskList {
     private ArrayList<Task> tasks;

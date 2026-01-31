@@ -2,9 +2,15 @@ package snowy;
 
 import java.util.Scanner;
 import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 /**
- * Handles user UI interactions such as reading input and displaying output
+ * Handles user interface operations for the Snowy chatbot.
+ * This class manages all UI interactions with the user, including reading user input,
+ * displaying response messages, showing task lists, and formatting output with appropriate
+ * indentation and separators. It encapsulates all System.out and Scanner operations
+ * to maintain a clean separation between UI logic and business logic.
  */
 public class Ui {
     private static final String LINE = "____________________________________________________________";
@@ -20,7 +26,7 @@ public class Ui {
      */
     public void showWelcome() {
         System.out.println(LINE);
-        System.out.println("Woof woof! I'm snowy.Snowy!");
+        System.out.println("Woof woof! I'm Snowy!");
         System.out.println("  /^-----^\\");
         System.out.println(" V  o o  |");
         System.out.println("  |  Y  |");
@@ -141,12 +147,12 @@ public class Ui {
      * @param matchingTasks The list of tasks on that date
      * @param date The target date to display
      */
-    public void showTasksOnDate(ArrayList<Task> matchingTasks, java.time.LocalDate date) {
+    public void showTasksOnDate(ArrayList<Task> matchingTasks, LocalDate date) {
         System.out.println(INDENT + LINE);
         if (matchingTasks.isEmpty()) {
-            System.out.println(INDENT + "No tasks found on " + date.format(java.time.format.DateTimeFormatter.ofPattern("MMM dd yyyy")));
+            System.out.println(INDENT + "No tasks found on " + date.format(DateTimeFormatter.ofPattern("MMM dd yyyy")));
         } else {
-            System.out.println(INDENT + "Tasks on " + date.format(java.time.format.DateTimeFormatter.ofPattern("MMM dd yyyy")) + ":");
+            System.out.println(INDENT + "Tasks on " + date.format(DateTimeFormatter.ofPattern("MMM dd yyyy")) + ":");
             for (int i = 0; i < matchingTasks.size(); i++) {
                 System.out.println(INDENT + (i + 1) + "." + matchingTasks.get(i).printDetailed());
             }

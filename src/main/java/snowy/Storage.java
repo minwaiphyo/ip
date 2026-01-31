@@ -9,7 +9,11 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
- * Handles loading tasks from file and saving tasks to file
+ * Handles data maintenance and manipulation for the Snowy chatbot.
+ * This class manages loading tasks from a file and saving tasks to a file,
+ * including parsing task data from the storage format and converting task
+ * objects into a saveable string format. It abstracts all file I/O operations
+ * from the business logic of the chatbot.
  */
 public class Storage {
     private String filePath;
@@ -23,7 +27,7 @@ public class Storage {
     }
 
     /**
-     * Initialize the data directory and file if they don't already exist
+     * Initializes the data directory and file if they don't already exist
      * @throws SnowyException if there's an error creating the file
      */
     public void initializeFile() throws SnowyException {
@@ -43,7 +47,7 @@ public class Storage {
     }
 
     /**
-     * Load all tasks from the file
+     * Loads all tasks from the file
      * @return ArrayList of tasks
      * @throws SnowyException if there's an error loading tasks
      */
@@ -71,7 +75,7 @@ public class Storage {
     }
 
     /**
-     * Save all tasks to the file
+     * Saves all tasks to the file
      * @param tasks ArrayList of tasks to save
      * @throws SnowyException if there's an error saving tasks
      */
@@ -90,7 +94,7 @@ public class Storage {
     }
 
     /**
-     * Parse a line from the file into a Task object
+     * Parses a line from the file into a Task object
      * Format: TaskType | isDone | description | [additional fields]
      * @param line Line from file
      * @return Task object or null if parse fails
