@@ -93,6 +93,10 @@ public class Snowy {
                         handleOn(input);
                         break;
 
+                    case "find":
+                        handleFind(input);
+                        break;
+
                     default:
                         throw new SnowyException("""
                             *Sad snowy.Snowy noises* I don't understand that command! Try 'todo', 'deadline', 'event', 'list', 'mark', 'unmark', 'delete', or 'on'!
@@ -221,6 +225,18 @@ public class Snowy {
         LocalDate targetDate = Parser.parseDate(dateString);
         ArrayList<Task> matchingTasks = tasks.getTasksOnDate(targetDate);
         ui.showTasksOnDate(matchingTasks, targetDate);
+    }
+
+    /**
+     * Handles the find command
+     *
+     * @param input The full user input
+     * @throws SnowyException If there's an error processing the search
+     */
+    private void handleFind(String input) throws SnowyException {
+        String keyword = Parser.parseFindKeyword(input);
+        ArrayList<Task> matchingTasks = tasks.findTasks(keyword);
+        ui.showMatchingTasks(matchingTasks);
     }
 
     /**

@@ -175,4 +175,25 @@ public class Parser {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         return LocalDate.parse(dateString, formatter);
     }
+
+    /**
+     * Parses the keyword from a "find" command
+     *
+     * @param fullCommand The full user input
+     * @return The search keyword
+     * @throws SnowyException If keyword is missing
+     */
+    public static String parseFindKeyword(String fullCommand) throws SnowyException {
+        if (fullCommand.trim().equals("find")) {
+            throw new SnowyException("Woof! Please specify a keyword to search for!");
+        }
+
+        String keyword = fullCommand.substring(5).trim();
+
+        if (keyword.isEmpty()) {
+            throw new SnowyException("Woof! Please specify a keyword to search for!");
+        }
+
+        return keyword;
+    }
 }
