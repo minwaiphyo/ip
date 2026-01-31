@@ -1,6 +1,5 @@
 package snowy;
 
-import java.util.Scanner;
 import java.util.ArrayList;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -10,55 +9,37 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Scanner;
 
 public class Snowy {
     private static final String FILEPATH = "data/tasks.txt";
+    private Ui ui;
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
+    public Snowy() {
+        ui = new Ui();
+    }
 
+    public void run() {
         // Initialize file and directory
         initializeFile();
 
-        String LINE = "____________________________________________________________";
-        String INDENT = "     ";
-
         // Greets user
-        System.out.println(LINE);
-        System.out.println("Woof woof! I'm snowy.Snowy!");
-        System.out.println("  /^-----^\\");
-        System.out.println(" V  o o  |");
-        System.out.println("  |  Y  |");
-        System.out.println("   \\ Q /");
-        System.out.println("   / - \\");
-        System.out.println("   |    \\");
-        System.out.println("   |     \\     )");
-        System.out.println("   || (___\\====");
-        System.out.println("What can I do for you? :3");
-        System.out.println(LINE);
+        ui.showWelcome();
 
         while (true) {
-            String input = scanner.nextLine();
+            String input = ui.readCommand();
 
             try {
                 // User terminating
                 if (input.equals("bye")) {
-                    System.out.println(INDENT + LINE);
-                    System.out.println(INDENT + "Sad puppy noises* Bye... Hope to play with you again soon!");
-                    System.out.println(INDENT + LINE);
+                    ui.showGoodbye();
                     break;
                 }
 
                 // Lists out tasks
                 if (input.trim().equals("list")) {
                     ArrayList<Task> tasks = loadTasks(FILEPATH);
-                    System.out.println(INDENT + LINE);
-                    System.out.println(INDENT + "Here are the tasks in your list:");
-                    for (int i = 0; i < tasks.size(); i++) {
-                        Task task = tasks.get(i);
-                        System.out.println(INDENT + (i + 1) + "." + task.printDetailed());
-                    }
-                    System.out.println(INDENT + LINE);
+                    ui.showTaskList(tasks);
 
                     // Unmark task
                 } else if (input.startsWith("unmark ") || input.equals("unmark")) {
@@ -79,11 +60,7 @@ public class Snowy {
                     tasks.get(taskIndex).markAsNotDone();
                     saveTasks(tasks, FILEPATH);
 
-                    System.out.println(INDENT + LINE);
-                    System.out.println(INDENT + "Ok, I've marked this task as not done yet:");
-                    System.out.println(INDENT + tasks.get(taskIndex).printDetailed());
-                    System.out.println(INDENT + LINE);
-
+                    ui.showTaskUnmarked(tasks.get(taskIndex));
 
                     // Mark task
                 } else if (input.startsWith("mark ") || input.equals("mark")) {
@@ -104,11 +81,7 @@ public class Snowy {
                     tasks.get(taskIndex).markAsDone();
                     saveTasks(tasks, FILEPATH);
 
-                    System.out.println(INDENT + LINE);
-                    System.out.println(INDENT + "Nice! I've marked this task as done:");
-                    System.out.println(INDENT + tasks.get(taskIndex).printDetailed());
-                    System.out.println(INDENT + LINE);
-
+                    ui.showTaskMarked(tasks.get(taskIndex));
 
                     // Creates todo
                 } else if (input.startsWith("todo ")) {
@@ -122,14 +95,9 @@ public class Snowy {
                     tasks.add(todo);
                     saveTasks(tasks, FILEPATH);
 
-                    System.out.println(INDENT + LINE);
-                    System.out.println(INDENT + "Got it. I've added this task:");
-                    System.out.println(INDENT + todo);
-                    System.out.println(INDENT + "Now you have " + tasks.size() + " tasks in the list.");
-                    System.out.println(INDENT + LINE);
+                    ui.showTaskAdded(todo, tasks.size());
                 } else if (input.equals("todo")) {
                     throw new SnowyException("Woof woof! The description of a snowy.ToDo cannot be empty!");
-
 
                     // Creates deadline
                 } else if (input.startsWith("deadline "))  {
@@ -158,11 +126,7 @@ public class Snowy {
                     tasks.add(deadline);
                     saveTasks(tasks, FILEPATH);
 
-                    System.out.println(INDENT + LINE);
-                    System.out.println(INDENT + "Got it. I've added this task:");
-                    System.out.println(INDENT + deadline.printDetailed());
-                    System.out.println(INDENT + "Now you have " + tasks.size() + " tasks in the list.");
-                    System.out.println(INDENT + LINE);
+                    ui.showTaskAdded(deadline, tasks.size());
                 } else if (input.equals("deadline")){
                     throw new SnowyException("Woof! The description of a deadline cannot be empty!");
 
@@ -195,22 +159,16 @@ public class Snowy {
                     tasks.add(event);
                     saveTasks(tasks, FILEPATH);
 
-                    System.out.println(INDENT + LINE);
-                    System.out.println(INDENT + "Got it. I've added this task:");
-                    System.out.println(INDENT + event.printDetailed());
-                    System.out.println(INDENT + "Now you have " + tasks.size() + " tasks in the list.");
-                    System.out.println(INDENT + LINE);
-
-
+                    ui.showTaskAdded(event, tasks.size());
                 } else if (input.equals("event")) {
-                    throw new SnowyException("Woof woof! The description of an event cannot be empty!");
+                    throw new SnowyException("Woof! The description of an event cannot be empty!");
 
-                    // Deletes task
+                    // Delete task
                 } else if (input.startsWith("delete ") || input.equals("delete")) {
 
                     // Handles empty taskIndex
                     if (input.length() <= 7) {
-                        throw new SnowyException("Woof woof! Please specify the index  of the task to delete!");
+                        throw new SnowyException("Woof! Please specify the number of the task to delete!");
                     }
 
                     int taskIndex = Integer.parseInt(input.substring(7)) - 1;
@@ -218,21 +176,15 @@ public class Snowy {
 
                     // Handles invalid taskIndex
                     if (taskIndex < 0 || taskIndex >= tasks.size()) {
-                        throw new SnowyException("Woof woof! That number doesn't exist!");
+                        throw new SnowyException("Woof! That task number doesn't exist!");
                     }
 
-                    Task task = tasks.get(taskIndex);
-                    tasks.remove(taskIndex);
+                    Task removedTask = tasks.remove(taskIndex);
                     saveTasks(tasks, FILEPATH);
 
-                    System.out.println(INDENT + LINE);
-                    System.out.println(INDENT + "Noted. I've removed this task:");
-                    System.out.println(INDENT + task.printDetailed());
-                    System.out.println(INDENT + "Now you have " + tasks.size() + " tasks in the list.");
-                    System.out.println(INDENT + LINE);
+                    ui.showTaskDeleted(removedTask, tasks.size());
 
-
-                // Strech goal: "on" command - print deadlines/events occurring on a specific date
+                    // View tasks on specific date
                 } else if (input.startsWith("on ")) {
                     String dateString = input.substring(3).trim();
 
@@ -245,11 +197,13 @@ public class Snowy {
                     ArrayList<Task> matchingTasks = new ArrayList<>();
 
                     for (Task task : tasks) {
-                        if (task instanceof Deadline deadline) {
+                        if (task instanceof Deadline) {
+                            Deadline deadline = (Deadline) task;
                             if (deadline.getBy().toLocalDate().equals(targetDate)) {
                                 matchingTasks.add(task);
                             }
-                        } else if (task instanceof Event event) {
+                        } else if (task instanceof Event) {
+                            Event event = (Event) task;
                             LocalDate fromDate = event.getStart().toLocalDate();
                             LocalDate toDate = event.getEnd().toLocalDate();
                             if (!targetDate.isBefore(fromDate) && !targetDate.isAfter(toDate)) {
@@ -258,16 +212,7 @@ public class Snowy {
                         }
                     }
 
-                    System.out.println(INDENT + LINE);
-                    if (matchingTasks.isEmpty()) {
-                        System.out.println(INDENT + "No tasks found on " + targetDate.format(DateTimeFormatter.ofPattern("MMM dd yyyy")));
-                    } else {
-                        System.out.println(INDENT + "Tasks on " + targetDate.format(DateTimeFormatter.ofPattern("MMM dd yyyy")) + ":");
-                        for (int i = 0; i < matchingTasks.size(); i++) {
-                            System.out.println(INDENT + (i + 1) + "." + matchingTasks.get(i).printDetailed());
-                        }
-                    }
-                    System.out.println(INDENT + LINE);
+                    ui.showTasksOnDate(matchingTasks, targetDate);
                 } else if (input.equals("on")){
                     throw new SnowyException("Woof! Please specify a date in yyyy-MM-dd format!");
                 } else {
@@ -276,27 +221,20 @@ public class Snowy {
                         """);
                 }
             } catch(SnowyException e) {
-                System.out.println(INDENT + LINE);
-                System.out.println(INDENT + e.getMessage());
-                System.out.println(INDENT + LINE);
+                ui.showError(e.getMessage());
             } catch (NumberFormatException e) {
-                System.out.println(INDENT + LINE);
-                System.out.println(INDENT + "Woof! Please provide a valid task number");
-                System.out.println(INDENT + LINE);
+                ui.showError("Woof! Please provide a valid task number");
             } catch (ArrayIndexOutOfBoundsException e) {
-                System.out.println(INDENT + LINE);
-                System.out.println(INDENT + "Woof woof! Something went wrong with parsing your command. Please check the format");
-                System.out.println(INDENT + LINE);
+                ui.showError("Woof woof! Something went wrong with parsing your command. Please check the format");
             } catch (DateTimeParseException e) {
-                System.out.println(INDENT + LINE);
-                System.out.println(INDENT + "Woof! Invalid date format. Please use yyyy-MM-dd HHmm (e.g., 2019-12-02 1800)");
+                ui.showError("Woof! Invalid date format. Please use yyyy-MM-dd HHmm (e.g., 2019-12-02 1800)");
             }
         }
-        scanner.close();
+        ui.close();
     }
 
     /**
-     * Initialize the data directory and file if they don't exist
+     * Initialize the data directory and file if they don't already exist
      */
     private static void initializeFile() {
         try {
@@ -444,7 +382,7 @@ public class Snowy {
     }
 
     /**
-     * Parse a date string into LocalDate
+     * Parses a date string into LocalDate
      * Accepts format: yyyy-MM-dd
      * @param dateString The date string to parse
      * @return LocalDate object
@@ -454,7 +392,8 @@ public class Snowy {
         return LocalDate.parse(dateString, formatter);
     }
 
-
+    public static void main(String[] args) {
+        Snowy snowy = new Snowy();
+        snowy.run();
+    }
 }
-
-
