@@ -1,5 +1,10 @@
 package snowy.task;
 
+
+/**
+ * Represents a task with a description and completion status.
+ * This is the base class for all task types in the Snowy chatbot.
+ */
 public class Task {
     protected String description;
     protected  boolean isDone;
