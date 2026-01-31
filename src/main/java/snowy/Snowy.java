@@ -1,3 +1,5 @@
+package snowy;
+
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.io.File;
@@ -23,7 +25,7 @@ public class Snowy {
 
         // Greets user
         System.out.println(LINE);
-        System.out.println("Woof woof! I'm Snowy!");
+        System.out.println("Woof woof! I'm snowy.Snowy!");
         System.out.println("  /^-----^\\");
         System.out.println(" V  o o  |");
         System.out.println("  |  Y  |");
@@ -112,7 +114,7 @@ public class Snowy {
                 } else if (input.startsWith("todo ")) {
                     String description = input.substring(5).trim();
                     if (description.isEmpty()) {
-                        throw new SnowyException("Woof woof! The description of a ToDo cannot be empty!");
+                        throw new SnowyException("Woof woof! The description of a snowy.ToDo cannot be empty!");
                     }
 
                     ToDo todo = new ToDo(description);
@@ -126,7 +128,7 @@ public class Snowy {
                     System.out.println(INDENT + "Now you have " + tasks.size() + " tasks in the list.");
                     System.out.println(INDENT + LINE);
                 } else if (input.equals("todo")) {
-                    throw new SnowyException("Woof woof! The description of a ToDo cannot be empty!");
+                    throw new SnowyException("Woof woof! The description of a snowy.ToDo cannot be empty!");
 
 
                     // Creates deadline
@@ -270,7 +272,7 @@ public class Snowy {
                     throw new SnowyException("Woof! Please specify a date in yyyy-MM-dd format!");
                 } else {
                     throw new SnowyException("""
-                        *Sad Snowy noises* I don't understand that command! Try 'todo', 'deadline', 'event', 'list', 'mark', 'unmark', 'delete', or 'on'!
+                        *Sad snowy.Snowy noises* I don't understand that command! Try 'todo', 'deadline', 'event', 'list', 'mark', 'unmark', 'delete', or 'on'!
                         """);
                 }
             } catch(SnowyException e) {
@@ -360,10 +362,10 @@ public class Snowy {
     }
 
     /**
-     * Parse a line from the file into a Task object
+     * Parse a line from the file into a snowy.Task object
      * Format: TaskType | isDone | description | [additional fields]
      * @param line Line from file
-     * @return Task object or null if parse fails
+     * @return snowy.Task object or null if parse fails
      */
     private static Task parseTask(String line) {
         try {
@@ -410,9 +412,9 @@ public class Snowy {
     }
 
     /**
-     * Convert a Task object into a saveable string
+     * Convert a snowy.Task object into a saveable string
      * Format: TaskType | isDone | description | [additional fields]
-     * @param task Task to convert
+     * @param task snowy.Task to convert
      * @return String representation for file
      */
     private static String taskToString(Task task) {
