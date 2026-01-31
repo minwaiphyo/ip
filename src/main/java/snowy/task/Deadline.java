@@ -6,6 +6,12 @@ import java.time.format.DateTimeFormatter;
 public class Deadline extends Task {
     protected LocalDateTime by;
 
+    /**
+     * Creates a new Deadline task with the given description and deadline date/time.
+     *
+     * @param description The description of the deadline task.
+     * @param by The date and time by which this task must be completed.
+     */
     public Deadline(String description, LocalDateTime by) {
         super(description);
         this.by = by;
@@ -15,7 +21,6 @@ public class Deadline extends Task {
     public String toString() {
         return "[D]" + super.toString();
     }
-
 
     @Override
     public String printDetailed() {

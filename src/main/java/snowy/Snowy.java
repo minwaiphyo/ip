@@ -42,6 +42,11 @@ public class Snowy {
         }
     }
 
+    /**
+     * Runs the main application loop.
+     * Displays the welcome message, continuously reads and processes user commands,
+     * and handles all exceptions appropriately until the user exits.
+     */
     public void run() {
         ui.showWelcome();
 
@@ -107,7 +112,11 @@ public class Snowy {
     }
 
     /**
-     * Handles the mark command
+     * Handles the mark command by marking a task as completed.
+     * Parses the task index, marks the task, saves to storage, and displays confirmation.
+     *
+     * @param input The complete user input string.
+     * @throws SnowyException If the task index is invalid or missing.
      */
     private void handleMark(String input) throws SnowyException {
         int taskIndex = Parser.parseTaskIndex(input, 5);
@@ -117,7 +126,11 @@ public class Snowy {
     }
 
     /**
-     * Handles the unmark command
+     * Handles the unmark command by marking a task as not completed.
+     * Parses the task index, unmarks the task, saves to storage, and displays confirmation.
+     *
+     * @param input The complete user input string.
+     * @throws SnowyException If the task index is invalid or missing.
      */
     private void handleUnmark(String input) throws SnowyException {
         int taskIndex = Parser.parseTaskIndex(input, 7);
@@ -127,7 +140,11 @@ public class Snowy {
     }
 
     /**
-     * Handles the todo command
+     * Handles the todo command by creating and adding a new ToDo task.
+     * Parses the description, creates the task, saves to storage, and displays confirmation.
+     *
+     * @param input The complete user input string.
+     * @throws SnowyException If the description is missing or empty.
      */
     private void handleTodo(String input) throws SnowyException {
         String description = Parser.parseTodoDescription(input);
@@ -138,7 +155,12 @@ public class Snowy {
     }
 
     /**
-     * Handles the deadline command
+     * Handles the deadline command by creating and adding a new Deadline task.
+     * Parses the description and deadline datetime, creates the task, saves to storage,
+     * and displays confirmation.
+     *
+     * @param input The complete user input string.
+     * @throws SnowyException If the format is invalid or any required information is missing.
      */
     private void handleDeadline(String input) throws SnowyException {
         String[] parts = Parser.parseDeadline(input);
@@ -153,7 +175,12 @@ public class Snowy {
     }
 
     /**
-     * Handles the event command
+     * Handles the event command by creating and adding a new Event task.
+     * Parses the description, start time, and end time, creates the task, saves to storage,
+     * and displays confirmation.
+     *
+     * @param input The complete user input string.
+     * @throws SnowyException If the format is invalid or any required information is missing.
      */
     private void handleEvent(String input) throws SnowyException {
         String[] parts = Parser.parseEvent(input);
@@ -170,7 +197,11 @@ public class Snowy {
     }
 
     /**
-     * Handles the delete command
+     * Handles the delete command by removing a task from the list.
+     * Parses the task index, removes the task, saves to storage, and displays confirmation.
+     *
+     * @param input The complete user input string.
+     * @throws SnowyException If the task index is invalid or missing.
      */
     private void handleDelete(String input) throws SnowyException {
         int taskIndex = Parser.parseTaskIndex(input, 7);
@@ -180,7 +211,11 @@ public class Snowy {
     }
 
     /**
-     * Handles the on command
+     * Handles the "on" command by finding and displaying all tasks on a specific date.
+     * Parses the date, finds matching tasks, and displays them to the user.
+     *
+     * @param input The complete user input string.
+     * @throws SnowyException If the date format is invalid or missing.
      */
     private void handleOn(String input) throws SnowyException {
         String dateString = Parser.parseOnDate(input);
@@ -189,6 +224,12 @@ public class Snowy {
         ui.showTasksOnDate(matchingTasks, targetDate);
     }
 
+    /**
+     * The main entry point for the Snowy application.
+     * Creates a new Snowy instance with the default file path and starts the application.
+     *
+     * @param args Command line arguments (currently unused).
+     */
     public static void main(String[] args) {
         new Snowy(FILEPATH).run();
     }
