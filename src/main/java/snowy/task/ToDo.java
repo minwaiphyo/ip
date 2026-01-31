@@ -1,4 +1,4 @@
-package snowy;
+package snowy.task;
 
 public class ToDo extends Task {
 
