@@ -1,11 +1,5 @@
 package snowy.storage;
 
-import snowy.exception.SnowyException;
-import snowy.task.Deadline;
-import snowy.task.Event;
-import snowy.task.Task;
-import snowy.task.ToDo;
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
@@ -13,6 +7,14 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
+
+import snowy.exception.SnowyException;
+import snowy.task.Deadline;
+import snowy.task.Event;
+import snowy.task.Task;
+import snowy.task.ToDo;
+
+
 
 /**
  * Handles data maintenance and manipulation for the Snowy chatbot.
