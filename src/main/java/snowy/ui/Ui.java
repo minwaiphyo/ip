@@ -163,6 +163,24 @@ public class Ui {
     }
 
     /**
+     * Displays tasks matching a search keyword
+     *
+     * @param matchingTasks The list of tasks matching the search
+     */
+    public void showMatchingTasks(ArrayList<Task> matchingTasks) {
+        System.out.println(INDENT + LINE);
+        if (matchingTasks.isEmpty()) {
+            System.out.println(INDENT + "Woof! No matching tasks found in your list.");
+        } else {
+            System.out.println(INDENT + "Here are the matching tasks in your list:");
+            for (int i = 0; i < matchingTasks.size(); i++) {
+                System.out.println(INDENT + (i + 1) + "." + matchingTasks.get(i).printDetailed());
+            }
+        }
+        System.out.println(INDENT + LINE);
+    }
+
+    /**
      * Closes the scanners
      */
     public void close() {
