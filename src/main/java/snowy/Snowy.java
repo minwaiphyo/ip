@@ -1,5 +1,10 @@
 package snowy;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
+
 import snowy.exception.SnowyException;
 import snowy.parser.Parser;
 import snowy.storage.Storage;
@@ -9,12 +14,6 @@ import snowy.task.Task;
 import snowy.task.ToDo;
 import snowy.tasklist.TaskList;
 import snowy.ui.Ui;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-
 
 /**
  * Main class for the Snowy chatbot.
