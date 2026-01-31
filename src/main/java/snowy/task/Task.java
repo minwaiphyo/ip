@@ -9,11 +9,24 @@ public class Task {
     protected String description;
     protected  boolean isDone;
 
+    /**
+     * Creates a new Task with the given description.
+     * The task is initially marked as not done.
+     *
+     * @param description The description of the task.
+     */
     public Task(String description) {
         this.description = description;
         this.isDone = false;
     }
 
+
+    /**
+     * Returns the status icon representing whether the task is completed.
+     * Returns "X" for completed tasks and a space " " for incomplete tasks.
+     *
+     * @return "X" if the task is done, " " (space) otherwise.
+     */
     public String getStatusIcon() {
         return isDone ? "X" : " ";
     }
@@ -31,6 +44,14 @@ public class Task {
         return "[" + getStatusIcon() + "]  " + description;
     }
 
+
+    /**
+     * Returns a detailed string representation of the task.
+     * For the base Task class, this is the same as toString().
+     * Subclasses may override this to include additional details like dates.
+     *
+     * @return A detailed string representation of the task.
+     */
     public String printDetailed() {
         return this.toString();
     }
