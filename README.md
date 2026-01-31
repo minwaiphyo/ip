@@ -1,26 +1,156 @@
-# snowy.Snowy project template
+# Snowy Project
 
-This is a project template for a greenfield Java project. It's named after the Java mascot _Duke_. Given below are instructions on how to use it.
+Snowy is a task management chatbot application that helps you keep track of todos, deadlines, and events. It's named after the pet dog of the famous comic character TinTin!
 
-## Setting up in Intellij
+## Features
 
-Prerequisites: JDK 17, update Intellij to the most recent version.
+- **Todo tasks**: Simple tasks without deadlines
+- **Deadline tasks**: Tasks with a specific due date and time
+- **Event tasks**: Tasks with a start and end time
+- **Mark/Unmark**: Track task completion status
+- **Find**: Search for tasks by keyword
+- **Date filtering**: View tasks occurring on a specific date
+- **Persistent storage**: Tasks are automatically saved to file
 
-1. Open Intellij (if you are not in the welcome screen, click `File` > `Close Project` to close the existing project first)
-1. Open the project into Intellij as follows:
+## Setting up in IntelliJ
+
+Prerequisites: JDK 17 or later, update IntelliJ to the most recent version.
+
+1. Open IntelliJ (if you are not in the welcome screen, click `File` > `Close Project` to close the existing project first)
+2. Open the project into IntelliJ as follows:
    1. Click `Open`.
-   1. Select the project directory, and click `OK`.
-   1. If there are any further prompts, accept the defaults.
-1. Configure the project to use **JDK 17** (not other versions) as explained in [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).<br>
+   2. Select the project directory, and click `OK`.
+   3. If there are any further prompts, accept the defaults.
+3. Configure the project to use **JDK 17** (not other versions) as explained in [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).
    In the same dialog, set the **Project language level** field to the `SDK default` option.
-1. After that, locate the `src/main/java/snowy.Snowy.java` file, right-click it, and choose `Run snowy.Snowy.main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, you should see something like the below as the output:
-   ```
-   Hello from
-    ____        _        
-   |  _ \ _   _| | _____ 
-   | | | | | | | |/ / _ \
-   | |_| | |_| |   <  __/
-   |____/ \__,_|_|\_\___|
-   ```
+4. After that, locate the `src/main/java/snowy/Snowy.java` file, right-click it, and choose `Run Snowy.main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, you should see something like the below as the output:
+```
+   ____________________________________________________________
+   Woof woof! I'm Snowy!
+     /^-----^\
+    V  o o  |
+     |  Y  |
+      \ Q /
+      / - \
+      |    \
+      |     \     )
+      || (___\====
+   What can I do for you? :3
+   ____________________________________________________________
+```
 
-**Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+## Running the Application
+
+### Using Gradle
+```bash
+# Build the project
+./gradlew build
+
+# Run the application
+./gradlew run
+
+# Create JAR file
+./gradlew shadowJar
+```
+
+### Using JAR file
+```bash
+# Run the JAR file
+java -jar snowy.jar
+```
+
+## Usage
+
+### Adding tasks
+
+**Todo:**
+```
+todo read book
+```
+
+**Deadline:**
+```
+deadline submit assignment /by 2024-12-25 1800
+```
+
+**Event:**
+```
+event team meeting /from 2024-12-25 1000 /to 2024-12-25 1200
+```
+
+### Managing tasks
+
+**List all tasks:**
+```
+list
+```
+
+**Mark task as done:**
+```
+mark 1
+```
+
+**Unmark task:**
+```
+unmark 1
+```
+
+**Delete task:**
+```
+delete 1
+```
+
+**Find tasks:**
+```
+find book
+```
+
+**View tasks on a date:**
+```
+on 2024-12-25
+```
+
+**Exit:**
+```
+bye
+```
+
+## Command Summary
+
+| Command | Format | Example |
+|---------|--------|---------|
+| Add Todo | `todo DESCRIPTION` | `todo read book` |
+| Add Deadline | `deadline DESCRIPTION /by DATE TIME` | `deadline return book /by 2024-12-25 1800` |
+| Add Event | `event DESCRIPTION /from DATE TIME /to DATE TIME` | `event project meeting /from 2024-12-25 1400 /to 2024-12-25 1600` |
+| List | `list` | `list` |
+| Mark | `mark INDEX` | `mark 2` |
+| Unmark | `unmark INDEX` | `unmark 2` |
+| Delete | `delete INDEX` | `delete 3` |
+| Find | `find KEYWORD` | `find book` |
+| View by date | `on DATE` | `on 2024-12-25` |
+| Exit | `bye` | `bye` |
+
+**Date format:** `yyyy-MM-dd` (e.g., 2024-12-25)  
+**Time format:** `HHmm` (e.g., 1800 for 6:00 PM)
+
+## Project Structure
+```
+src/
+├── main/
+│   └── java/
+│       └── snowy/
+│           ├── Snowy.java          # Main class
+│           ├── task/               # Task-related classes
+│           ├── ui/                 # User interface
+│           ├── storage/            # File I/O operations
+│           ├── parser/             # Command parsing
+│           ├── tasklist/           # Task list management
+│           └── exception/          # Custom exceptions
+└── test/
+    └── java/
+        └── snowy/                  # JUnit tests
+```
+
+## Acknowledgements
+
+This project was developed as part of CS2103 Software Engineering module at NUS.
