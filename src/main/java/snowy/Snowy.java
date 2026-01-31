@@ -99,7 +99,7 @@ public class Snowy {
 
                     default:
                         throw new SnowyException("""
-                            *Sad snowy.Snowy noises* I don't understand that command! Try 'todo', 'deadline', 'event', 'list', 'mark', 'unmark', 'delete', or 'on'!
+                            *Sad Snowy noises* I don't understand that command! Try 'todo', 'deadline', 'event', 'list', 'mark', 'unmark', 'delete', or 'on'!
                             """);
                 }
             } catch (SnowyException e) {
