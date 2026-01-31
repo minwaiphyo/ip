@@ -1,4 +1,4 @@
-package snowy;
+package snowy.task;
 
 public class Task {
     protected String description;
@@ -28,5 +28,13 @@ public class Task {
 
     public String printDetailed() {
         return this.toString();
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public boolean isDone() {
+        return isDone;
     }
 }

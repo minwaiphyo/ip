@@ -1,4 +1,6 @@
-package snowy;
+package snowy.parser;
+
+import snowy.exception.SnowyException;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -61,12 +63,12 @@ public class Parser {
      */
     public static String parseTodoDescription(String fullCommand) throws SnowyException {
         if (fullCommand.trim().equals("todo")) {
-            throw new SnowyException("Woof woof! The description of a snowy.ToDo cannot be empty!");
+            throw new SnowyException("Woof woof! The description of a snowy.task.ToDo cannot be empty!");
         }
 
         String description = fullCommand.substring(5).trim();
         if (description.isEmpty()) {
-            throw new SnowyException("Woof woof! The description of a snowy.ToDo cannot be empty!");
+            throw new SnowyException("Woof woof! The description of a snowy.task.ToDo cannot be empty!");
         }
 
         return description;

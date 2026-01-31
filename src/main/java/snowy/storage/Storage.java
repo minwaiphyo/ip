@@ -1,4 +1,10 @@
-package snowy;
+package snowy.storage;
+
+import snowy.exception.SnowyException;
+import snowy.task.Deadline;
+import snowy.task.Event;
+import snowy.task.Task;
+import snowy.task.ToDo;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -150,16 +156,16 @@ public class Storage {
      * @return String representation for file
      */
     private String taskToString(Task task) {
-        String isDone = task.isDone ? "1" : "0";
+        String isDone = task.isDone() ? "1" : "0";
 
         if (task instanceof ToDo) {
-            return "T | " + isDone + " | " + task.description;
+            return "T | " + isDone + " | " + task.getDescription();
         } else if (task instanceof Deadline) {
             Deadline deadline = (Deadline) task;
-            return "D | " + isDone + " | " + task.description + " | " + deadline.getBy().toString();
+            return "D | " + isDone + " | " + task.getDescription() + " | " + deadline.getBy().toString();
         } else if (task instanceof Event) {
             Event event = (Event) task;
-            return "E | " + isDone + " | " + task.description + " | " + event.getStart().toString() + " | " + event.getEnd().toString();
+            return "E | " + isDone + " | " + task.getDescription() + " | " + event.getStart().toString() + " | " + event.getEnd().toString();
         }
         return "";
     }
