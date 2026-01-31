@@ -1,14 +1,15 @@
 package snowy;
 
-import java.util.ArrayList;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 
 public class Snowy {
     private static final String FILEPATH = "data/tasks.txt";
     private Storage storage;
+    private TaskList tasks;
     private Ui ui;
 
     public Snowy(String filePath) {
@@ -16,8 +17,10 @@ public class Snowy {
         storage = new Storage(filePath);
         try {
             storage.initializeFile();
+            tasks = new TaskList(storage.load());
         } catch (SnowyException e) {
-            ui.showError(e.getMessage());
+            ui.showLoadingError();
+            tasks = new TaskList();
         }
     }
 
@@ -37,8 +40,7 @@ public class Snowy {
 
                 // Lists out tasks
                 if (input.trim().equals("list")) {
-                    ArrayList<Task> tasks = storage.load();
-                    ui.showTaskList(tasks);
+                    ui.showTaskList(tasks.getTasks());
 
                     // Unmark task
                 } else if (input.startsWith("unmark ") || input.equals("unmark")) {
@@ -49,17 +51,10 @@ public class Snowy {
                     }
 
                     int taskIndex = Integer.parseInt(input.substring(7)) - 1;
-                    ArrayList<Task> tasks = storage.load();
+                    tasks.unmarkTask(taskIndex);
+                    storage.save(tasks.getTasks());
 
-                    // Handles invalid taskIndex
-                    if (taskIndex < 0 || taskIndex >= tasks.size()) {
-                        throw new SnowyException("Woof woof! That number doesn't exist!");
-                    }
-
-                    tasks.get(taskIndex).markAsNotDone();
-                    storage.save(tasks);
-
-                    ui.showTaskUnmarked(tasks.get(taskIndex));
+                    ui.showTaskUnmarked(tasks.getTask(taskIndex));
 
                     // Mark task
                 } else if (input.startsWith("mark ") || input.equals("mark")) {
@@ -70,17 +65,10 @@ public class Snowy {
                     }
 
                     int taskIndex = Integer.parseInt(input.substring(5)) - 1;
-                    ArrayList<Task> tasks = storage.load();
+                    tasks.markTask(taskIndex);
+                    storage.save(tasks.getTasks());
 
-                    // Handles invalid taskIndex
-                    if (taskIndex < 0 || taskIndex >= tasks.size()) {
-                        throw new SnowyException("Woof woof! That task number doesn't exist!");
-                    }
-
-                    tasks.get(taskIndex).markAsDone();
-                    storage.save(tasks);
-
-                    ui.showTaskMarked(tasks.get(taskIndex));
+                    ui.showTaskMarked(tasks.getTask(taskIndex));
 
                     // Creates todo
                 } else if (input.startsWith("todo ")) {
@@ -90,9 +78,8 @@ public class Snowy {
                     }
 
                     ToDo todo = new ToDo(description);
-                    ArrayList<Task> tasks = storage.load();
-                    tasks.add(todo);
-                    storage.save(tasks);
+                    tasks.addTask(todo);
+                    storage.save(tasks.getTasks());
 
                     ui.showTaskAdded(todo, tasks.size());
                 } else if (input.equals("todo")) {
@@ -121,9 +108,8 @@ public class Snowy {
                     LocalDateTime by = parseDateTime(byString);
                     Deadline deadline = new Deadline(description, by);
 
-                    ArrayList<Task> tasks = storage.load();
-                    tasks.add(deadline);
-                    storage.save(tasks);
+                    tasks.addTask(deadline);
+                    storage.save(tasks.getTasks());
 
                     ui.showTaskAdded(deadline, tasks.size());
                 } else if (input.equals("deadline")){
@@ -154,9 +140,8 @@ public class Snowy {
 
                     Event event = new Event(description, from, to);
 
-                    ArrayList<Task> tasks = storage.load();
-                    tasks.add(event);
-                    storage.save(tasks);
+                    tasks.addTask(event);
+                    storage.save(tasks.getTasks());
 
                     ui.showTaskAdded(event, tasks.size());
                 } else if (input.equals("event")) {
@@ -171,15 +156,8 @@ public class Snowy {
                     }
 
                     int taskIndex = Integer.parseInt(input.substring(7)) - 1;
-                    ArrayList<Task> tasks = storage.load();
-
-                    // Handles invalid taskIndex
-                    if (taskIndex < 0 || taskIndex >= tasks.size()) {
-                        throw new SnowyException("Woof! That task number doesn't exist!");
-                    }
-
-                    Task removedTask = tasks.remove(taskIndex);
-                    storage.save(tasks);
+                    Task removedTask = tasks.deleteTask(taskIndex);
+                    storage.save(tasks.getTasks());
 
                     ui.showTaskDeleted(removedTask, tasks.size());
 
@@ -192,24 +170,7 @@ public class Snowy {
                     }
 
                     LocalDate targetDate = parseDate(dateString);
-                    ArrayList<Task> tasks = storage.load();
-                    ArrayList<Task> matchingTasks = new ArrayList<>();
-
-                    for (Task task : tasks) {
-                        if (task instanceof Deadline) {
-                            Deadline deadline = (Deadline) task;
-                            if (deadline.getBy().toLocalDate().equals(targetDate)) {
-                                matchingTasks.add(task);
-                            }
-                        } else if (task instanceof Event) {
-                            Event event = (Event) task;
-                            LocalDate fromDate = event.getStart().toLocalDate();
-                            LocalDate toDate = event.getEnd().toLocalDate();
-                            if (!targetDate.isBefore(fromDate) && !targetDate.isAfter(toDate)) {
-                                matchingTasks.add(task);
-                            }
-                        }
-                    }
+                    ArrayList<Task> matchingTasks = tasks.getTasksOnDate(targetDate);
 
                     ui.showTasksOnDate(matchingTasks, targetDate);
                 } else if (input.equals("on")){
