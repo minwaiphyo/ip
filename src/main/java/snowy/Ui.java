@@ -4,7 +4,7 @@ import java.util.Scanner;
 import java.util.ArrayList;
 
 /**
- * Handles UI operations such as reading input and displaying output
+ * Handles user UI interactions such as reading input and displaying output
  */
 public class Ui {
     private static final String LINE = "____________________________________________________________";

@@ -1,28 +1,27 @@
 package snowy;
 
 import java.util.ArrayList;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.Scanner;
 
 public class Snowy {
     private static final String FILEPATH = "data/tasks.txt";
+    private Storage storage;
     private Ui ui;
 
-    public Snowy() {
+    public Snowy(String filePath) {
         ui = new Ui();
+        storage = new Storage(filePath);
+        try {
+            storage.initializeFile();
+        } catch (SnowyException e) {
+            ui.showError(e.getMessage());
+        }
     }
 
     public void run() {
-        // Initialize file and directory
-        initializeFile();
-
         // Greets user
         ui.showWelcome();
 
@@ -38,7 +37,7 @@ public class Snowy {
 
                 // Lists out tasks
                 if (input.trim().equals("list")) {
-                    ArrayList<Task> tasks = loadTasks(FILEPATH);
+                    ArrayList<Task> tasks = storage.load();
                     ui.showTaskList(tasks);
 
                     // Unmark task
@@ -50,7 +49,7 @@ public class Snowy {
                     }
 
                     int taskIndex = Integer.parseInt(input.substring(7)) - 1;
-                    ArrayList<Task> tasks = loadTasks(FILEPATH);
+                    ArrayList<Task> tasks = storage.load();
 
                     // Handles invalid taskIndex
                     if (taskIndex < 0 || taskIndex >= tasks.size()) {
@@ -58,7 +57,7 @@ public class Snowy {
                     }
 
                     tasks.get(taskIndex).markAsNotDone();
-                    saveTasks(tasks, FILEPATH);
+                    storage.save(tasks);
 
                     ui.showTaskUnmarked(tasks.get(taskIndex));
 
@@ -71,7 +70,7 @@ public class Snowy {
                     }
 
                     int taskIndex = Integer.parseInt(input.substring(5)) - 1;
-                    ArrayList<Task> tasks = loadTasks(FILEPATH);
+                    ArrayList<Task> tasks = storage.load();
 
                     // Handles invalid taskIndex
                     if (taskIndex < 0 || taskIndex >= tasks.size()) {
@@ -79,7 +78,7 @@ public class Snowy {
                     }
 
                     tasks.get(taskIndex).markAsDone();
-                    saveTasks(tasks, FILEPATH);
+                    storage.save(tasks);
 
                     ui.showTaskMarked(tasks.get(taskIndex));
 
@@ -91,9 +90,9 @@ public class Snowy {
                     }
 
                     ToDo todo = new ToDo(description);
-                    ArrayList<Task> tasks = loadTasks(FILEPATH);
+                    ArrayList<Task> tasks = storage.load();
                     tasks.add(todo);
-                    saveTasks(tasks, FILEPATH);
+                    storage.save(tasks);
 
                     ui.showTaskAdded(todo, tasks.size());
                 } else if (input.equals("todo")) {
@@ -122,9 +121,9 @@ public class Snowy {
                     LocalDateTime by = parseDateTime(byString);
                     Deadline deadline = new Deadline(description, by);
 
-                    ArrayList<Task> tasks = loadTasks(FILEPATH);
+                    ArrayList<Task> tasks = storage.load();
                     tasks.add(deadline);
-                    saveTasks(tasks, FILEPATH);
+                    storage.save(tasks);
 
                     ui.showTaskAdded(deadline, tasks.size());
                 } else if (input.equals("deadline")){
@@ -155,9 +154,9 @@ public class Snowy {
 
                     Event event = new Event(description, from, to);
 
-                    ArrayList<Task> tasks = loadTasks(FILEPATH);
+                    ArrayList<Task> tasks = storage.load();
                     tasks.add(event);
-                    saveTasks(tasks, FILEPATH);
+                    storage.save(tasks);
 
                     ui.showTaskAdded(event, tasks.size());
                 } else if (input.equals("event")) {
@@ -172,7 +171,7 @@ public class Snowy {
                     }
 
                     int taskIndex = Integer.parseInt(input.substring(7)) - 1;
-                    ArrayList<Task> tasks = loadTasks(FILEPATH);
+                    ArrayList<Task> tasks = storage.load();
 
                     // Handles invalid taskIndex
                     if (taskIndex < 0 || taskIndex >= tasks.size()) {
@@ -180,7 +179,7 @@ public class Snowy {
                     }
 
                     Task removedTask = tasks.remove(taskIndex);
-                    saveTasks(tasks, FILEPATH);
+                    storage.save(tasks);
 
                     ui.showTaskDeleted(removedTask, tasks.size());
 
@@ -193,7 +192,7 @@ public class Snowy {
                     }
 
                     LocalDate targetDate = parseDate(dateString);
-                    ArrayList<Task> tasks = loadTasks(FILEPATH);
+                    ArrayList<Task> tasks = storage.load();
                     ArrayList<Task> matchingTasks = new ArrayList<>();
 
                     for (Task task : tasks) {
@@ -234,143 +233,6 @@ public class Snowy {
     }
 
     /**
-     * Initialize the data directory and file if they don't already exist
-     */
-    private static void initializeFile() {
-        try {
-            File directory = new File("data");
-            if (!directory.exists()) {
-                directory.mkdir();
-            }
-
-            File file = new File(FILEPATH);
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-        } catch (IOException e) {
-            System.out.println("Error initializing file: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Load all tasks from the file
-     * @param filepath Path to the tasks file
-     * @return ArrayList of tasks
-     */
-    private static ArrayList<Task> loadTasks(String filepath) {
-        ArrayList<Task> tasks = new ArrayList<>();
-
-        try {
-            File file = new File(filepath);
-            Scanner fileScanner = new Scanner(file);
-
-            while (fileScanner.hasNextLine()) {
-                String line = fileScanner.nextLine();
-                Task task = parseTask(line);
-                if (task != null) {
-                    tasks.add(task);
-                }
-            }
-            fileScanner.close();
-
-        } catch (FileNotFoundException e) {
-            // File doesn't exist yet, return empty list
-        }
-
-        return tasks;
-    }
-
-    /**
-     * Save all tasks to the file
-     * @param tasks ArrayList of tasks to save
-     * @param filepath Path to the tasks file
-     */
-    private static void saveTasks(ArrayList<Task> tasks, String filepath) {
-        try {
-            FileWriter writer = new FileWriter(filepath);
-
-            for (Task task : tasks) {
-                writer.write(taskToString(task) + "\n");
-            }
-
-            writer.close();
-        } catch (IOException e) {
-            System.out.println("Error saving tasks: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Parse a line from the file into a snowy.Task object
-     * Format: TaskType | isDone | description | [additional fields]
-     * @param line Line from file
-     * @return snowy.Task object or null if parse fails
-     */
-    private static Task parseTask(String line) {
-        try {
-            String[] parts = line.split(" \\| ");
-
-            if (parts.length < 3) {
-                return null;
-            }
-
-            String taskType = parts[0];
-            boolean isDone = parts[1].equals("1");
-            String description = parts[2];
-
-            Task task = null;
-
-            switch (taskType) {
-                case "T":
-                    task = new ToDo(description);
-                    break;
-                case "D":
-                    if (parts.length >= 4) {
-                        LocalDateTime by = LocalDateTime.parse(parts[3]);
-                        task = new Deadline(description, by);
-                    }
-                    break;
-                case "E":
-                    if (parts.length >= 5) {
-                        LocalDateTime from = LocalDateTime.parse(parts[3]);
-                        LocalDateTime to = LocalDateTime.parse(parts[4]);
-                        task = new Event(description, from, to);
-                    }
-                    break;
-            }
-
-            if (task != null && isDone) {
-                task.markAsDone();
-            }
-
-            return task;
-
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    /**
-     * Convert a snowy.Task object into a saveable string
-     * Format: TaskType | isDone | description | [additional fields]
-     * @param task snowy.Task to convert
-     * @return String representation for file
-     */
-    private static String taskToString(Task task) {
-        String isDone = task.isDone ? "1" : "0";
-
-        if (task instanceof ToDo) {
-            return "T | " + isDone + " | " + task.description;
-        } else if (task instanceof Deadline) {
-            Deadline deadline = (Deadline) task;
-            return "D | " + isDone + " | " + task.description + " | " + deadline.getBy().toString();
-        } else if (task instanceof Event) {
-            Event event = (Event) task;
-            return "E | " + isDone + " | " + task.description + " | " + event.getStart().toString() + " | " + event.getEnd().toString();
-        }
-        return "";
-    }
-
-    /**
      * Parse a date-time string into LocalDateTime
      * Accepts format: yyyy-MM-dd HHmm
      * @param dateTimeString The date-time string to parse
@@ -382,7 +244,7 @@ public class Snowy {
     }
 
     /**
-     * Parses a date string into LocalDate
+     * Parse a date string into LocalDate
      * Accepts format: yyyy-MM-dd
      * @param dateString The date string to parse
      * @return LocalDate object
@@ -393,7 +255,6 @@ public class Snowy {
     }
 
     public static void main(String[] args) {
-        Snowy snowy = new Snowy();
-        snowy.run();
+        new Snowy(FILEPATH).run();
     }
 }
