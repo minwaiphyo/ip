@@ -42,7 +42,7 @@ test {
 }
 
 application {
-    mainClass.set("snowy.Snowy")
+    mainClass.set("snowy.Launcher")
 }
 
 shadowJar {
