@@ -27,92 +27,33 @@ public class Snowy {
     private static final String FILEPATH = "data/tasks.txt";
     private Storage storage;
     private TaskList tasks;
-    private Ui ui;
 
+
+    /**
+     * Creates a new Snowy instance with default file path.
+     */
+    public Snowy() {
+        this(FILEPATH);
+    }
+
+    /**
+     * Creates a new Snowy instance with the specified file path.
+     * Initializes storage at the given location, loads existing tasks from file,
+     * and creates an empty task list if loading fails.
+     *
+     * @param filePath The path to the data file for storing tasks.
+     */
     public Snowy(String filePath) {
-        ui = new Ui();
+
         storage = new Storage(filePath);
         try {
             storage.initializeFile();
             tasks = new TaskList(storage.load());
         } catch (SnowyException e) {
-            ui.showLoadingError();
             tasks = new TaskList();
         }
     }
 
-    /**
-     * Runs the main application loop.
-     * Displays the welcome message, continuously reads and processes user commands,
-     * and handles all exceptions appropriately until the user exits.
-     */
-    public void run() {
-        ui.showWelcome();
-
-        while (true) {
-            String input = ui.readCommand();
-
-            try {
-                String command = Parser.parseCommand(input);
-
-                switch (command) {
-                    case "bye":
-                        ui.showGoodbye();
-                        ui.close();
-                        return;
-
-                    case "list":
-                        ui.showTaskList(tasks.getTasks());
-                        break;
-
-                    case "mark":
-                        handleMark(input);
-                        break;
-
-                    case "unmark":
-                        handleUnmark(input);
-                        break;
-
-                    case "todo":
-                        handleTodo(input);
-                        break;
-
-                    case "deadline":
-                        handleDeadline(input);
-                        break;
-
-                    case "event":
-                        handleEvent(input);
-                        break;
-
-                    case "delete":
-                        handleDelete(input);
-                        break;
-
-                    case "on":
-                        handleOn(input);
-                        break;
-
-                    case "find":
-                        handleFind(input);
-                        break;
-
-                    default:
-                        throw new SnowyException("""
-                            *Sad Snowy noises* I don't understand that command! Try 'todo', 'deadline', 'event', 'list', 'mark', 'unmark', 'delete', or 'on'!
-                            """);
-                }
-            } catch (SnowyException e) {
-                ui.showError(e.getMessage());
-            } catch (NumberFormatException e) {
-                ui.showError("Woof! Please provide a valid task number");
-            } catch (ArrayIndexOutOfBoundsException e) {
-                ui.showError("Woof woof! Something went wrong with parsing your command. Please check the format");
-            } catch (DateTimeParseException e) {
-                ui.showError("Woof! Invalid date format. Please use yyyy-MM-dd HHmm (e.g., 2019-12-02 1800)");
-            }
-        }
-    }
 
     /**
      * Handles the mark command by marking a task as completed.
@@ -121,11 +62,11 @@ public class Snowy {
      * @param input The complete user input string.
      * @throws SnowyException If the task index is invalid or missing.
      */
-    private void handleMark(String input) throws SnowyException {
+    private String handleMark(String input) throws SnowyException {
         int taskIndex = Parser.parseTaskIndex(input, 5);
         tasks.markTask(taskIndex);
         storage.save(tasks.getTasks());
-        ui.showTaskMarked(tasks.getTask(taskIndex));
+        return "Nice! I've marked this task as done:\n" + tasks.getTask(taskIndex).printDetailed();
     }
 
     /**
@@ -135,11 +76,11 @@ public class Snowy {
      * @param input The complete user input string.
      * @throws SnowyException If the task index is invalid or missing.
      */
-    private void handleUnmark(String input) throws SnowyException {
+    private String handleUnmark(String input) throws SnowyException {
         int taskIndex = Parser.parseTaskIndex(input, 7);
         tasks.unmarkTask(taskIndex);
         storage.save(tasks.getTasks());
-        ui.showTaskUnmarked(tasks.getTask(taskIndex));
+        return "Ok, I've marked this task as not done yet:\n" + tasks.getTask(taskIndex).printDetailed();
     }
 
     /**
@@ -149,12 +90,13 @@ public class Snowy {
      * @param input The complete user input string.
      * @throws SnowyException If the description is missing or empty.
      */
-    private void handleTodo(String input) throws SnowyException {
+    private String handleTodo(String input) throws SnowyException {
         String description = Parser.parseTodoDescription(input);
-        ToDo todo = new ToDo(description);
-        tasks.addTask(todo);
+        Task task = new ToDo(description);
+        tasks.addTask(task);
         storage.save(tasks.getTasks());
-        ui.showTaskAdded(todo, tasks.size());
+        return "Got it. I've added this task:\n" + task.printDetailed() + "\n"
+                + "Now you have " + tasks.size() + " tasks in the list.";
     }
 
     /**
@@ -165,16 +107,18 @@ public class Snowy {
      * @param input The complete user input string.
      * @throws SnowyException If the format is invalid or any required information is missing.
      */
-    private void handleDeadline(String input) throws SnowyException {
-        String[] parts = Parser.parseDeadline(input);
-        String description = parts[0];
-        String byString = parts[1];
-        LocalDateTime by = Parser.parseDateTime(byString);
-
-        Deadline deadline = new Deadline(description, by);
-        tasks.addTask(deadline);
-        storage.save(tasks.getTasks());
-        ui.showTaskAdded(deadline, tasks.size());
+    private String handleDeadline(String input) throws SnowyException {
+        try {
+            String[] parts = Parser.parseDeadline(input);
+            LocalDateTime by = Parser.parseDateTime(parts[1]);
+            Task task = new Deadline(parts[0], by);
+            tasks.addTask(task);
+            storage.save(tasks.getTasks());
+            return "Got it. I've added this task:\n" + task.printDetailed() + "\n"
+                    + "Now you have " + tasks.size() + " tasks in the list.";
+        } catch (DateTimeParseException e) {
+            throw new SnowyException("Woof! Please use the format: yyyy-MM-dd HHmm");
+        }
     }
 
     /**
@@ -185,18 +129,19 @@ public class Snowy {
      * @param input The complete user input string.
      * @throws SnowyException If the format is invalid or any required information is missing.
      */
-    private void handleEvent(String input) throws SnowyException {
-        String[] parts = Parser.parseEvent(input);
-        String description = parts[0];
-        String fromString = parts[1];
-        String toString = parts[2];
-        LocalDateTime from = Parser.parseDateTime(fromString);
-        LocalDateTime to = Parser.parseDateTime(toString);
-
-        Event event = new Event(description, from, to);
-        tasks.addTask(event);
-        storage.save(tasks.getTasks());
-        ui.showTaskAdded(event, tasks.size());
+    private String handleEvent(String input) throws SnowyException {
+        try {
+            String[] parts = Parser.parseEvent(input);
+            LocalDateTime from = Parser.parseDateTime(parts[1]);
+            LocalDateTime to = Parser.parseDateTime(parts[2]);
+            Task task = new Event(parts[0], from, to);
+            tasks.addTask(task);
+            storage.save(tasks.getTasks());
+            return "Got it. I've added this task:\n" + task.printDetailed() + "\n"
+                    + "Now you have " + tasks.size() + " tasks in the list.";
+        } catch (DateTimeParseException e) {
+            throw new SnowyException("Woof! Please use the format: yyyy-MM-dd HHmm");
+        }
     }
 
     /**
@@ -206,11 +151,12 @@ public class Snowy {
      * @param input The complete user input string.
      * @throws SnowyException If the task index is invalid or missing.
      */
-    private void handleDelete(String input) throws SnowyException {
+    private String handleDelete(String input) throws SnowyException {
         int taskIndex = Parser.parseTaskIndex(input, 7);
         Task removedTask = tasks.deleteTask(taskIndex);
         storage.save(tasks.getTasks());
-        ui.showTaskDeleted(removedTask, tasks.size());
+        return "Noted. I've removed this task:\n" + removedTask.printDetailed() + "\n"
+                + "Now you have " + tasks.size() + " tasks in the list.";
     }
 
     /**
@@ -220,11 +166,27 @@ public class Snowy {
      * @param input The complete user input string.
      * @throws SnowyException If the date format is invalid or missing.
      */
-    private void handleOn(String input) throws SnowyException {
-        String dateString = Parser.parseOnDate(input);
-        LocalDate targetDate = Parser.parseDate(dateString);
-        ArrayList<Task> matchingTasks = tasks.getTasksOnDate(targetDate);
-        ui.showTasksOnDate(matchingTasks, targetDate);
+    private String handleOn(String input) throws SnowyException {
+        try {
+            String dateString = Parser.parseOnDate(input);
+            LocalDate date = Parser.parseDate(dateString);
+            ArrayList<Task> matchingTasks = tasks.getTasksOnDate(date);
+
+            if (matchingTasks.isEmpty()) {
+                return "No tasks found on " + date.format(java.time.format.DateTimeFormatter.ofPattern("MMM dd yyyy"));
+            }
+
+            StringBuilder result = new StringBuilder("Tasks on ")
+                    .append(date.format(java.time.format.DateTimeFormatter.ofPattern("MMM dd yyyy")))
+                    .append(":\n");
+            for (int i = 0; i < matchingTasks.size(); i++) {
+                result.append((i + 1)).append(". ").append(matchingTasks.get(i).printDetailed()).append("\n");
+            }
+            return result.toString().trim();
+        } catch (DateTimeParseException e) {
+            throw new SnowyException("Woof! Please use the format: yyyy-MM-dd");
+        }
+
     }
 
     /**
@@ -233,19 +195,78 @@ public class Snowy {
      * @param input The full user input
      * @throws SnowyException If there's an error processing the search
      */
-    private void handleFind(String input) throws SnowyException {
+    private String handleFind(String input) throws SnowyException {
         String keyword = Parser.parseFindKeyword(input);
         ArrayList<Task> matchingTasks = tasks.findTasks(keyword);
-        ui.showMatchingTasks(matchingTasks);
+        if (matchingTasks.isEmpty()) {
+            return "Woof! No matching tasks found in your list.";
+        }
+
+        StringBuilder result = new StringBuilder("Here are the matching tasks in your list:\n");
+        for (int i = 0; i < matchingTasks.size(); i++) {
+            result.append((i + 1)).append(". ").append(matchingTasks.get(i).printDetailed()).append("\n");
+        }
+        return result.toString().trim();
     }
 
-    /**
-     * The main entry point for the Snowy application.
-     * Creates a new Snowy instance with the default file path and starts the application.
-     *
-     * @param args Command line arguments (currently unused).
-     */
-    public static void main(String[] args) {
-        new Snowy(FILEPATH).run();
+    private String formatTaskList() {
+        if (tasks.size() == 0) {
+            return "Woof! Your task list is empty!";
+        }
+        StringBuilder result = new StringBuilder("Here are the tasks in your list:\n");
+        for (int i = 0; i < tasks.size(); i++) {
+            result.append((i + 1)).append(". ").append(tasks.getTask(i).printDetailed()).append("\n");
+        }
+        return result.toString().trim();
     }
+
+    public String getWelcome() {
+        return "Woof woof! I'm Snowy!\n";
+    }
+
+    public String getResponse(String input) {
+        try {
+            String command = Parser.parseCommand(input);
+
+            switch (command) {
+                case "bye":
+                    return "Sad puppy noises* Bye... Hope to play with you again soon!";
+
+                case "list":
+                    return formatTaskList();  // ← NEW HELPER METHOD
+
+                case "mark":
+                    return handleMark(input);  // ← NOW RETURNS STRING
+
+                case "unmark":
+                    return handleUnmark(input);  // ← NOW RETURNS STRING
+
+                case "todo":
+                    return handleTodo(input);  // ← NOW RETURNS STRING
+
+                case "deadline":
+                    return handleDeadline(input);  // ← NOW RETURNS STRING
+
+                case "event":
+                    return handleEvent(input);  // ← NOW RETURNS STRING
+
+                case "delete":
+                    return handleDelete(input);  // ← NOW RETURNS STRING
+
+                case "on":
+                    return handleOn(input);  // ← NOW RETURNS STRING
+
+                case "find":
+                    return handleFind(input);  // ← NOW RETURNS STRING
+
+                default:
+                    return "Woof! I don't understand that command. :(";
+            }
+        } catch (SnowyException e) {
+            return e.getMessage();  // ← RETURN ERROR MESSAGE
+        } catch (Exception e) {
+            return "Woof! Something went wrong: " + e.getMessage();
+        }
+    }
+
 }
