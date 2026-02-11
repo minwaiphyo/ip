@@ -70,10 +70,8 @@ public class Parser {
             throw new SnowyException("Woof woof! The description of a snowy.task.ToDo cannot be empty!");
         }
 
-        String description = fullCommand.substring(5).trim();
-        if (description.isEmpty()) {
-            throw new SnowyException("Woof woof! The description of a snowy.task.ToDo cannot be empty!");
-        }
+        String errorMsg = "Woof woof! The description of a ToDo cannot be empty!";
+        String description = extractArgument(fullCommand, 5, errorMsg);
 
         assert !description.isEmpty() : "Todo description should not be empty at this point";
         assert description.equals(description.trim()) : "Description should already be trimmed";
@@ -92,11 +90,8 @@ public class Parser {
             throw new SnowyException("Woof! The description of a deadline cannot be empty!");
         }
 
-        String details = fullCommand.substring(9).trim();
-
-        if (details.isEmpty()) {
-            throw new SnowyException("Woof! The description of a deadline cannot be empty!");
-        }
+        String errorMsg = "Woof! The description of a deadline cannot be empty!";
+        String details = extractArgument(fullCommand, 9, errorMsg);
 
         if (!details.contains(" /by ")) {
             throw new SnowyException("Woof woof! Please use the format: deadline [task] /by [yyyy-MM-dd HHmm]");
@@ -126,11 +121,9 @@ public class Parser {
             throw new SnowyException("Woof! The description of an event cannot be empty!");
         }
 
-        String details = fullCommand.substring(6);
+        String errorMsg = "Woof! The description of an event cannot be empty!";
+        String details = extractArgument(fullCommand, 6, errorMsg);
 
-        if (details.isEmpty()) {
-            throw new SnowyException("Woof! The description of an event cannot be empty!");
-        }
 
         if (!details.contains(" /from ") || !details.contains(" /to ")) {
             throw new SnowyException("Woof woof! Please use the format: event [task] /from [yyyy-MM-dd HHmm] /to [yyyy-MM-dd HHmm]");
@@ -158,11 +151,8 @@ public class Parser {
             throw new SnowyException("Woof! Please specify a date in yyyy-MM-dd format!");
         }
 
-        String dateString = fullCommand.substring(3).trim();
-
-        if (dateString.isEmpty()) {
-            throw new SnowyException("Woof! Please specify a date in date in yyyy-MM-dd format!");
-        }
+        String errorMsg = "Woof! Please specify a date in date in yyyy-MM-dd format!";
+        String dateString = extractArgument(fullCommand, 3, errorMsg);
 
         return dateString;
     }
@@ -201,12 +191,17 @@ public class Parser {
             throw new SnowyException("Woof! Please specify a keyword to search for!");
         }
 
-        String keyword = fullCommand.substring(5).trim();
-
-        if (keyword.isEmpty()) {
-            throw new SnowyException("Woof! Please specify a keyword to search for!");
-        }
+        String errorMsg = "Woof! Please specify a keyword to search for!";
+        String keyword = extractArgument(fullCommand, 5, errorMsg);
 
         return keyword;
+    }
+
+    private static String extractArgument(String fullCommand, int commandLength, String errorMsg) throws SnowyException {
+        String arg = fullCommand.substring(commandLength).trim();
+        if (arg.isEmpty()) {
+            throw new SnowyException(errorMsg);
+        }
+        return arg;
     }
 }

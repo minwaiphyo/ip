@@ -139,6 +139,9 @@ public class Storage {
                         task = new Event(description, from, to);
                     }
                     break;
+                default:
+                    // Unknown task type in file — corrupted or unsupported data, skip this entry
+                    return null;
             }
 
             if (task != null && isDone) {

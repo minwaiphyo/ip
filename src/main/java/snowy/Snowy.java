@@ -2,6 +2,7 @@ package snowy;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
@@ -13,7 +14,6 @@ import snowy.task.Event;
 import snowy.task.Task;
 import snowy.task.ToDo;
 import snowy.tasklist.TaskList;
-import snowy.ui.Ui;
 
 /**
  * Main class for the Snowy chatbot.
@@ -25,9 +25,13 @@ import snowy.ui.Ui;
  */
 public class Snowy {
     private static final String FILEPATH = "data/tasks.txt";
+    private static final DateTimeFormatter DATE_DISPLAY_FORMAT = DateTimeFormatter.ofPattern("MMM DD YYYY");
     private Storage storage;
     private TaskList tasks;
 
+    private static final int MARK_CMD_LENGTH = 5;    // "mark "
+    private static final int UNMARK_CMD_LENGTH = 7;  // "unmark "
+    private static final int DELETE_CMD_LENGTH = 7;  // "delete "
 
     /**
      * Creates a new Snowy instance with default file path.
@@ -63,7 +67,7 @@ public class Snowy {
      * @throws SnowyException If the task index is invalid or missing.
      */
     private String handleMark(String input) throws SnowyException {
-        int taskIndex = Parser.parseTaskIndex(input, 5);
+        int taskIndex = Parser.parseTaskIndex(input, MARK_CMD_LENGTH);
         tasks.markTask(taskIndex);
         storage.save(tasks.getTasks());
         return "Nice! I've marked this task as done:\n" + tasks.getTask(taskIndex).printDetailed();
@@ -77,7 +81,7 @@ public class Snowy {
      * @throws SnowyException If the task index is invalid or missing.
      */
     private String handleUnmark(String input) throws SnowyException {
-        int taskIndex = Parser.parseTaskIndex(input, 7);
+        int taskIndex = Parser.parseTaskIndex(input, UNMARK_CMD_LENGTH);
         tasks.unmarkTask(taskIndex);
         storage.save(tasks.getTasks());
         return "Ok, I've marked this task as not done yet:\n" + tasks.getTask(taskIndex).printDetailed();
@@ -109,11 +113,15 @@ public class Snowy {
      */
     private String handleDeadline(String input) throws SnowyException {
         try {
+            // Parse command into components
             String[] parts = Parser.parseDeadline(input);
             LocalDateTime by = Parser.parseDateTime(parts[1]);
+
+            // Construct and store the tasks
             Task task = new Deadline(parts[0], by);
             tasks.addTask(task);
             storage.save(tasks.getTasks());
+
             return "Got it. I've added this task:\n" + task.printDetailed() + "\n"
                     + "Now you have " + tasks.size() + " tasks in the list.";
         } catch (DateTimeParseException e) {
@@ -131,9 +139,12 @@ public class Snowy {
      */
     private String handleEvent(String input) throws SnowyException {
         try {
+            // Parse command intro components
             String[] parts = Parser.parseEvent(input);
             LocalDateTime from = Parser.parseDateTime(parts[1]);
             LocalDateTime to = Parser.parseDateTime(parts[2]);
+
+            // Construct and store the task
             Task task = new Event(parts[0], from, to);
             tasks.addTask(task);
             storage.save(tasks.getTasks());
@@ -152,7 +163,7 @@ public class Snowy {
      * @throws SnowyException If the task index is invalid or missing.
      */
     private String handleDelete(String input) throws SnowyException {
-        int taskIndex = Parser.parseTaskIndex(input, 7);
+        int taskIndex = Parser.parseTaskIndex(input, DELETE_CMD_LENGTH);
         Task removedTask = tasks.deleteTask(taskIndex);
         storage.save(tasks.getTasks());
         return "Noted. I've removed this task:\n" + removedTask.printDetailed() + "\n"
@@ -173,18 +184,18 @@ public class Snowy {
             ArrayList<Task> matchingTasks = tasks.getTasksOnDate(date);
 
             if (matchingTasks.isEmpty()) {
-                return "No tasks found on " + date.format(java.time.format.DateTimeFormatter.ofPattern("MMM dd yyyy"));
+                return "No tasks found on " + date.format(DATE_DISPLAY_FORMAT);
             }
 
             StringBuilder result = new StringBuilder("Tasks on ")
-                    .append(date.format(java.time.format.DateTimeFormatter.ofPattern("MMM dd yyyy")))
+                    .append(date.format(DATE_DISPLAY_FORMAT))
                     .append(":\n");
             for (int i = 0; i < matchingTasks.size(); i++) {
                 result.append((i + 1)).append(". ").append(matchingTasks.get(i).printDetailed()).append("\n");
             }
             return result.toString().trim();
         } catch (DateTimeParseException e) {
-            throw new SnowyException("Woof! Please use the format: yyyy-MM-dd");
+            throw new SnowyException("Woof! Please use the format: " + DATE_DISPLAY_FORMAT);
         }
 
     }
