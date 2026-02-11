@@ -3,6 +3,9 @@ package snowy.task;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Represents a task that occurs over a specific time period.
+ */
 public class Event extends Task {
     protected LocalDateTime start;
     protected LocalDateTime end;
@@ -11,8 +14,8 @@ public class Event extends Task {
      * Creates a new Event task with the given description, start time, and end time.
      *
      * @param description The description of the event.
-     * @param start The date and time when the event starts.
-     * @param end The date and time when the event ends.
+     * @param start       The date and time when the event starts.
+     * @param end         The date and time when the event ends.
      */
     public Event(String description, LocalDateTime start, LocalDateTime end) {
         super(description);
@@ -28,7 +31,12 @@ public class Event extends Task {
     @Override
     public String printDetailed() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM d yyyy HH:mm");
-        return this.toString() + " (from: " + this.start.format(formatter) + " to: " + this.end.format(formatter) + ")";
+        return this + " (from: " + this.start.format(formatter) + " to: " + this.end.format(formatter) + ")";
+    }
+
+    @Override
+    public LocalDateTime getDate() {
+        return this.start;
     }
 
     public LocalDateTime getStart() {

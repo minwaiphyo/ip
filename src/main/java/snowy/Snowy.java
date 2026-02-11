@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import snowy.exception.SnowyException;
 import snowy.parser.Parser;
@@ -24,14 +26,15 @@ import snowy.tasklist.TaskList;
  * and Parser components.
  */
 public class Snowy {
+
     private static final String FILEPATH = "data/tasks.txt";
+    private static final int MARK_CMD_LENGTH = 5; // "mark "
+    private static final int UNMARK_CMD_LENGTH = 7; // "unmark "
+    private static final int DELETE_CMD_LENGTH = 7; // "delete "
     private static final DateTimeFormatter DATE_DISPLAY_FORMAT = DateTimeFormatter.ofPattern("MMM DD YYYY");
-    private Storage storage;
+    private final Storage storage;
     private TaskList tasks;
 
-    private static final int MARK_CMD_LENGTH = 5;    // "mark "
-    private static final int UNMARK_CMD_LENGTH = 7;  // "unmark "
-    private static final int DELETE_CMD_LENGTH = 7;  // "delete "
 
     /**
      * Creates a new Snowy instance with default file path.
@@ -232,6 +235,17 @@ public class Snowy {
         return result.toString().trim();
     }
 
+    private String formatSortedTaskList() {
+        if (tasks.size() == 0) {
+            return "Woof! Your task list is empty!";
+        }
+
+        String taskLines = IntStream.range(0, tasks.getSortedTasks().size())
+                .mapToObj(i -> (i + 1) + ". " + tasks.getSortedTasks().get(i).printDetailed())
+                .collect(Collectors.joining("\n"));
+        return "Here are your tasks in sorted order:\n" + taskLines;
+    }
+
     public String getWelcome() {
         return "Woof woof! I'm Snowy!\n";
     }
@@ -241,38 +255,41 @@ public class Snowy {
             String command = Parser.parseCommand(input);
             assert command != null && !command.isEmpty() : "Parsed command should never be null or empty";
             switch (command) {
-                case "bye":
-                    return "Sad puppy noises* Bye... Hope to play with you again soon!";
+            case "bye":
+                return "Sad puppy noises* Bye... Hope to play with you again soon!";
 
-                case "list":
-                    return formatTaskList();
+            case "list":
+                return formatTaskList();
 
-                case "mark":
-                    return handleMark(input);
+            case "mark":
+                return handleMark(input);
 
-                case "unmark":
-                    return handleUnmark(input);
+            case "unmark":
+                return handleUnmark(input);
 
-                case "todo":
-                    return handleTodo(input);
+            case "todo":
+                return handleTodo(input);
 
-                case "deadline":
-                    return handleDeadline(input);
+            case "deadline":
+                return handleDeadline(input);
 
-                case "event":
-                    return handleEvent(input);
+            case "event":
+                return handleEvent(input);
 
-                case "delete":
-                    return handleDelete(input);
+            case "delete":
+                return handleDelete(input);
 
-                case "on":
-                    return handleOn(input);
+            case "on":
+                return handleOn(input);
 
-                case "find":
-                    return handleFind(input);
+            case "find":
+                return handleFind(input);
 
-                default:
-                    return "Woof! I don't understand that command. :(";
+            case "sortedlist":
+                return formatSortedTaskList();
+
+            default:
+                return "Woof! I don't understand that command. :(";
             }
         } catch (SnowyException e) {
             return e.getMessage();

@@ -1,13 +1,18 @@
 package snowy.tasklist;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+
 import snowy.exception.SnowyException;
 import snowy.task.Deadline;
 import snowy.task.Event;
 import snowy.task.Task;
+import snowy.task.ToDo;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.stream.Collectors;
+import java.time.LocalDateTime;
+import java.util.Comparator;
+
 
 /**
  * Manages the task list for the Snowy chatbot.
@@ -17,7 +22,7 @@ import java.util.stream.Collectors;
  * finding tasks occurring on a specific date.
  */
 public class TaskList {
-    private ArrayList<Task> tasks;
+    private final ArrayList<Task> tasks;
 
     /**
      * Creates an empty TaskList with no tasks.
@@ -28,6 +33,7 @@ public class TaskList {
 
     /**
      * Creates a TaskList with existing tasks
+     *
      * @param tasks ArrayList of tasks
      */
     public TaskList(ArrayList<Task> tasks) {
@@ -36,6 +42,7 @@ public class TaskList {
 
     /**
      * Adds a task to the list
+     *
      * @param task Task to add
      */
     public void addTask(Task task) {
@@ -45,6 +52,7 @@ public class TaskList {
 
     /**
      * Deletes a task at the specified index
+     *
      * @param index Index of task to delete (0-based)
      * @return The deleted task
      * @throws SnowyException if index is invalid
@@ -58,6 +66,7 @@ public class TaskList {
 
     /**
      * Gets a task at the specified index
+     *
      * @param index Index of task to get (0-based)
      * @return The task at the index
      * @throws SnowyException if index is invalid
@@ -70,6 +79,7 @@ public class TaskList {
 
     /**
      * Marks a task as done
+     *
      * @param index Index of task to mark (0-based)
      * @throws SnowyException if index is invalid
      */
@@ -80,6 +90,7 @@ public class TaskList {
 
     /**
      * Marks a task as not done
+     *
      * @param index Index of task to unmark (0-based)
      * @throws SnowyException if index is invalid
      */
@@ -90,6 +101,7 @@ public class TaskList {
 
     /**
      * Gets all tasks in the list
+     *
      * @return ArrayList of all tasks
      */
     public ArrayList<Task> getTasks() {
@@ -98,14 +110,33 @@ public class TaskList {
 
     /**
      * Gets the number of tasks in the list
+     *
      * @return Number of tasks
      */
     public int size() {
         return tasks.size();
     }
 
+    public ArrayList<Task> getSortedTasks() {
+        return tasks.stream()
+                .sorted(Comparator
+                        .comparingInt(this::getTaskTypeOrder)
+                        .thenComparing(task -> task.getDate() == null
+                                ? LocalDateTime.MAX
+                                : task.getDate()))
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private int getTaskTypeOrder(Task task) {
+        if (task instanceof ToDo) return 0;
+        if (task instanceof Deadline) return 1;
+        if (task instanceof Event) return 2;
+        return 3;
+    }
+
     /**
      * Finds tasks occurring on a specific date
+     *
      * @param date The date to search for
      * @return ArrayList of tasks on that date
      */

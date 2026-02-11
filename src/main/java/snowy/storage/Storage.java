@@ -16,7 +16,6 @@ import snowy.task.Task;
 import snowy.task.ToDo;
 
 
-
 /**
  * Handles data maintenance and manipulation for the Snowy chatbot.
  * This class manages loading tasks from a file and saving tasks to a file,
@@ -25,10 +24,11 @@ import snowy.task.ToDo;
  * from the business logic of the chatbot.
  */
 public class Storage {
-    private String filePath;
+    private final String filePath;
 
     /**
      * Creates a Storage object with the specified file path
+     *
      * @param filePath Path to the data file
      */
     public Storage(String filePath) {
@@ -37,6 +37,7 @@ public class Storage {
 
     /**
      * Initializes the data directory and file if they don't already exist
+     *
      * @throws SnowyException if there's an error creating the file
      */
     public void initializeFile() throws SnowyException {
@@ -57,6 +58,7 @@ public class Storage {
 
     /**
      * Loads all tasks from the file
+     *
      * @return ArrayList of tasks
      * @throws SnowyException if there's an error loading tasks
      */
@@ -85,6 +87,7 @@ public class Storage {
 
     /**
      * Saves all tasks to the file
+     *
      * @param tasks ArrayList of tasks to save
      * @throws SnowyException if there's an error saving tasks
      */
@@ -105,6 +108,7 @@ public class Storage {
     /**
      * Parses a line from the file into a Task object
      * Format: TaskType | isDone | description | [additional fields]
+     *
      * @param line Line from file
      * @return Task object or null if parse fails
      */
@@ -123,25 +127,25 @@ public class Storage {
             Task task = null;
 
             switch (taskType) {
-                case "T":
-                    task = new ToDo(description);
-                    break;
-                case "D":
-                    if (parts.length >= 4) {
-                        LocalDateTime by = LocalDateTime.parse(parts[3]);
-                        task = new Deadline(description, by);
-                    }
-                    break;
-                case "E":
-                    if (parts.length >= 5) {
-                        LocalDateTime from = LocalDateTime.parse(parts[3]);
-                        LocalDateTime to = LocalDateTime.parse(parts[4]);
-                        task = new Event(description, from, to);
-                    }
-                    break;
-                default:
-                    // Unknown task type in file — corrupted or unsupported data, skip this entry
-                    return null;
+            case "T":
+                task = new ToDo(description);
+                break;
+            case "D":
+                if (parts.length >= 4) {
+                    LocalDateTime by = LocalDateTime.parse(parts[3]);
+                    task = new Deadline(description, by);
+                }
+                break;
+            case "E":
+                if (parts.length >= 5) {
+                    LocalDateTime from = LocalDateTime.parse(parts[3]);
+                    LocalDateTime to = LocalDateTime.parse(parts[4]);
+                    task = new Event(description, from, to);
+                }
+                break;
+            default:
+                // Unknown task type in file — corrupted or unsupported data, skip this entry
+                return null;
             }
 
             if (task != null && isDone) {
@@ -159,6 +163,7 @@ public class Storage {
     /**
      * Converts a Task object into a saveable string
      * Format: TaskType | isDone | description | [additional fields]
+     *
      * @param task Task to convert
      * @return String representation for file
      */
@@ -168,12 +173,11 @@ public class Storage {
 
         if (task instanceof ToDo) {
             return "T | " + isDone + " | " + task.getDescription();
-        } else if (task instanceof Deadline) {
-            Deadline deadline = (Deadline) task;
+        } else if (task instanceof Deadline deadline) {
             return "D | " + isDone + " | " + task.getDescription() + " | " + deadline.getBy().toString();
-        } else if (task instanceof Event) {
-            Event event = (Event) task;
-            return "E | " + isDone + " | " + task.getDescription() + " | " + event.getStart().toString() + " | " + event.getEnd().toString();
+        } else if (task instanceof Event event) {
+            return "E | " + isDone + " | " + task.getDescription() + " | " + event.getStart().toString() + " | "
+                    + event.getEnd().toString();
         }
         return "";
     }

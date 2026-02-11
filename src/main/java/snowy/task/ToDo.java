@@ -21,7 +21,7 @@ public class ToDo extends Task {
     }
 
     @Override
-    public String printDetailed(){
+    public String printDetailed() {
         return this.toString();
     }
 }

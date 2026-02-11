@@ -35,7 +35,7 @@ public class DialogBox extends HBox {
      * image view with the provided content.
      *
      * @param text The message text to display in the dialog box.
-     * @param img The avatar image to display next to the message.
+     * @param img  The avatar image to display next to the message.
      */
     private DialogBox(String text, Image img) {
         try {
@@ -52,23 +52,11 @@ public class DialogBox extends HBox {
     }
 
     /**
-     * Flips the dialog box such that the ImageView is on the left and text on the right.
-     * This is used to visually distinguish Snowy's messages (flipped) from user
-     * messages (not flipped).
-     */
-    private void flip() {
-        ObservableList<Node> tmp = FXCollections.observableArrayList(this.getChildren());
-        Collections.reverse(tmp);
-        getChildren().setAll(tmp);
-        setAlignment(Pos.TOP_LEFT);
-    }
-
-    /**
      * Creates a dialog box for displaying user messages.
      * The avatar appears on the right side with text on the left.
      *
      * @param text The user's message text.
-     * @param img The user's avatar image.
+     * @param img  The user's avatar image.
      * @return A DialogBox configured for user messages.
      */
     public static DialogBox getUserDialog(String text, Image img) {
@@ -81,12 +69,24 @@ public class DialogBox extends HBox {
      * achieved by flipping the standard layout.
      *
      * @param text Snowy's response text.
-     * @param img Snowy's avatar image.
+     * @param img  Snowy's avatar image.
      * @return A DialogBox configured for Snowy's messages.
      */
     public static DialogBox getSnowyDialog(String text, Image img) {
         var db = new DialogBox(text, img);
         db.flip();
         return db;
+    }
+
+    /**
+     * Flips the dialog box such that the ImageView is on the left and text on the right.
+     * This is used to visually distinguish Snowy's messages (flipped) from user
+     * messages (not flipped).
+     */
+    private void flip() {
+        ObservableList<Node> tmp = FXCollections.observableArrayList(this.getChildren());
+        Collections.reverse(tmp);
+        getChildren().setAll(tmp);
+        setAlignment(Pos.TOP_LEFT);
     }
 }

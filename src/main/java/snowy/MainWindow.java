@@ -15,6 +15,8 @@ import javafx.scene.layout.VBox;
  * coordinates with the Snowy chatbot to generate and display responses.
  */
 public class MainWindow extends AnchorPane {
+    private final Image userImage = new Image(this.getClass().getResourceAsStream("/images/tintin.png"));
+    private final Image snowyImage = new Image(this.getClass().getResourceAsStream("/images/snowy.png"));
     @FXML
     private ScrollPane scrollPane;
     @FXML
@@ -23,11 +25,7 @@ public class MainWindow extends AnchorPane {
     private TextField userInput;
     @FXML
     private Button sendButton;
-
     private Snowy snowy;
-
-    private Image userImage = new Image(this.getClass().getResourceAsStream("/images/tintin.png"));
-    private Image snowyImage = new Image(this.getClass().getResourceAsStream("/images/snowy.png"));
 
     /**
      * Initializes the main window components.

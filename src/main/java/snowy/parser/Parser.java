@@ -1,10 +1,10 @@
 package snowy.parser;
 
-import snowy.exception.SnowyException;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+import snowy.exception.SnowyException;
 
 /**
  * Parses user commands and extracts relevant information.
@@ -17,6 +17,7 @@ public class Parser {
 
     /**
      * Parses user input and returns the command type
+     *
      * @param fullCommand The full user input
      * @return The command word
      */
@@ -40,7 +41,8 @@ public class Parser {
 
     /**
      * Parses the task index from mark/unmark/delete commands
-     * @param fullCommand The full user input
+     *
+     * @param fullCommand   The full user input
      * @param commandLength The length of the command word + 1 (for the space)
      * @return The task index (0-based)
      * @throws SnowyException if index is missing or invalid
@@ -61,6 +63,7 @@ public class Parser {
 
     /**
      * Parses the description from a todo command
+     *
      * @param fullCommand The full user input
      * @return The task description
      * @throws SnowyException if description is empty
@@ -81,6 +84,7 @@ public class Parser {
 
     /**
      * Parses a deadline command and returns the description and deadline
+     *
      * @param fullCommand The full user input
      * @return String array: [description, byString]
      * @throws SnowyException if format is invalid
@@ -103,7 +107,7 @@ public class Parser {
             throw new SnowyException("Woof! Both the description and deadline are required!");
         }
 
-        assert parts.length == 2: "Deadline split should produce exactly 2 parts";
+        assert parts.length == 2 : "Deadline split should produce exactly 2 parts";
         assert !parts[0].trim().isEmpty() : "Deadline description should not be empty";
         assert !parts[1].trim().isEmpty() : "Deadline 'by' field should not be empty";
 
@@ -112,6 +116,7 @@ public class Parser {
 
     /**
      * Parses an event command and returns the description, start time, and end time
+     *
      * @param fullCommand The full user input
      * @return String array: [description, fromString, toString]
      * @throws SnowyException if format is invalid
@@ -126,7 +131,8 @@ public class Parser {
 
 
         if (!details.contains(" /from ") || !details.contains(" /to ")) {
-            throw new SnowyException("Woof woof! Please use the format: event [task] /from [yyyy-MM-dd HHmm] /to [yyyy-MM-dd HHmm]");
+            throw new SnowyException("Woof woof! Please use the format: "
+                    + "event [task] /from [yyyy-MM-dd HHmm] /to [yyyy-MM-dd HHmm]");
         }
 
         String[] parts = details.split(" /from | /to ");
@@ -142,6 +148,7 @@ public class Parser {
 
     /**
      * Parses the date from an "on" command
+     *
      * @param fullCommand The full user input
      * @return The date string
      * @throws SnowyException if date is missing
@@ -160,6 +167,7 @@ public class Parser {
     /**
      * Parses a date-time string into LocalDateTime
      * Accepts format: yyyy-MM-dd HHmm
+     *
      * @param dateTimeString The date-time string to parse
      * @return LocalDateTime object
      */
@@ -171,6 +179,7 @@ public class Parser {
     /**
      * Parses a date string into LocalDate
      * Accepts format: yyyy-MM-dd
+     *
      * @param dateString The date string to parse
      * @return LocalDate object
      */
@@ -197,7 +206,8 @@ public class Parser {
         return keyword;
     }
 
-    private static String extractArgument(String fullCommand, int commandLength, String errorMsg) throws SnowyException {
+    private static String extractArgument(
+            String fullCommand, int commandLength, String errorMsg) throws SnowyException {
         String arg = fullCommand.substring(commandLength).trim();
         if (arg.isEmpty()) {
             throw new SnowyException(errorMsg);

@@ -2,6 +2,8 @@
 
 Snowy is a task management chatbot application that helps you keep track of todos, deadlines, and events. It's named after the pet dog of the famous comic character TinTin!
 
+![Snowy GUI](docs/images/Ui.png)
+
 ## Features
 
 - **Todo tasks**: Simple tasks without deadlines
@@ -10,6 +12,7 @@ Snowy is a task management chatbot application that helps you keep track of todo
 - **Mark/Unmark**: Track task completion status
 - **Find**: Search for tasks by keyword
 - **Date filtering**: View tasks occurring on a specific date
+- **Sorted view**: View all tasks grouped by type and sorted chronologically
 - **Persistent storage**: Tasks are automatically saved to file
 
 ## Setting up in IntelliJ
@@ -23,21 +26,7 @@ Prerequisites: JDK 17 or later, update IntelliJ to the most recent version.
    3. If there are any further prompts, accept the defaults.
 3. Configure the project to use **JDK 17** (not other versions) as explained in [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).
    In the same dialog, set the **Project language level** field to the `SDK default` option.
-4. After that, locate the `src/main/java/snowy/Snowy.java` file, right-click it, and choose `Run Snowy.main()` (if the code editor is showing compile errors, try restarting the IDE). If the setup is correct, you should see something like the below as the output:
-```
-   ____________________________________________________________
-   Woof woof! I'm Snowy!
-     /^-----^\
-    V  o o  |
-     |  Y  |
-      \ Q /
-      / - \
-      |    \
-      |     \     )
-      || (___\====
-   What can I do for you? :3
-   ____________________________________________________________
-```
+4. After that, locate the `src/main/java/snowy/Launcher.java` file, right-click it, and choose `Run Launcher.main()`. If the setup is correct, the Snowy chat window should appear.
 
 ## Running the Application
 
@@ -55,11 +44,12 @@ Prerequisites: JDK 17 or later, update IntelliJ to the most recent version.
 
 ### Using JAR file
 ```bash
-# Run the JAR file
 java -jar snowy.jar
 ```
 
 ## Usage
+
+Type commands into the input box at the bottom of the chat window and press Enter or click Send.
 
 ### Adding tasks
 
@@ -84,6 +74,15 @@ event team meeting /from 2024-12-25 1000 /to 2024-12-25 1200
 ```
 list
 ```
+
+**List all tasks in sorted order:**
+```
+sortedlist
+```
+Tasks are grouped by type (Todos → Deadlines → Events). Within each group,
+Deadlines and Events are sorted chronologically by date. Todos maintain
+their original insertion order. Note that `sortedlist` does not modify
+the underlying task list — use `list` to see the original order.
 
 **Mark task as done:**
 ```
@@ -123,6 +122,7 @@ bye
 | Add Deadline | `deadline DESCRIPTION /by DATE TIME` | `deadline return book /by 2024-12-25 1800` |
 | Add Event | `event DESCRIPTION /from DATE TIME /to DATE TIME` | `event project meeting /from 2024-12-25 1400 /to 2024-12-25 1600` |
 | List | `list` | `list` |
+| Sorted List | `sortedlist` | `sortedlist` |
 | Mark | `mark INDEX` | `mark 2` |
 | Unmark | `unmark INDEX` | `unmark 2` |
 | Delete | `delete INDEX` | `delete 3` |
@@ -137,15 +137,21 @@ bye
 ```
 src/
 ├── main/
-│   └── java/
-│       └── snowy/
-│           ├── Snowy.java          # Main class
-│           ├── task/               # Task-related classes
-│           ├── ui/                 # User interface
-│           ├── storage/            # File I/O operations
-│           ├── parser/             # Command parsing
-│           ├── tasklist/           # Task list management
-│           └── exception/          # Custom exceptions
+│   ├── java/
+│   │   └── snowy/
+│   │       ├── Launcher.java       # Entry point
+│   │       ├── Main.java           # JavaFX application
+│   │       ├── MainWindow.java     # Main window controller
+│   │       ├── DialogBox.java      # Chat dialog component
+│   │       ├── Snowy.java          # Chatbot logic
+│   │       ├── task/               # Task-related classes
+│   │       ├── storage/            # File I/O operations
+│   │       ├── parser/             # Command parsing
+│   │       ├── tasklist/           # Task list management
+│   │       └── exception/          # Custom exceptions
+│   └── resources/
+│       ├── view/                   # FXML layout files
+│       └── images/                 # UI images
 └── test/
     └── java/
         └── snowy/                  # JUnit tests

@@ -1,7 +1,5 @@
 package snowy.tasklist;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.BeforeEach;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -10,11 +8,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
 import snowy.exception.SnowyException;
-import snowy.task.Task;
-import snowy.task.ToDo;
 import snowy.task.Deadline;
 import snowy.task.Event;
+import snowy.task.Task;
+import snowy.task.ToDo;
 
 /**
  * JUnit tests for TaskList class.
