@@ -4,9 +4,12 @@ import snowy.exception.SnowyException;
 import snowy.task.Deadline;
 import snowy.task.Event;
 import snowy.task.Task;
+import snowy.task.ToDo;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 /**
@@ -102,6 +105,23 @@ public class TaskList {
      */
     public int size() {
         return tasks.size();
+    }
+
+    public ArrayList<Task> getSortedTasks() {
+        return tasks.stream()
+                .sorted(Comparator
+                        .comparingInt(this::getTaskTypeOrder)
+                        .thenComparing(task -> task.getDate() == null
+                                ? LocalDateTime.MAX
+                                : task.getDate()))
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
+
+    private int getTaskTypeOrder(Task task) {
+        if (task instanceof ToDo) return 0;
+        if (task instanceof Deadline) return 1;
+        if (task instanceof Event) return 2;
+        return 3;
     }
 
     /**

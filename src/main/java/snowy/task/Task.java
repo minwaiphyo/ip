@@ -1,6 +1,8 @@
 package snowy.task;
 
 
+import java.time.LocalDateTime;
+
 /**
  * Represents a task with a description and completion status.
  * This is the base class for all task types in the Snowy chatbot.
@@ -39,6 +41,10 @@ public class Task {
 
     public void markAsNotDone() {
         this.isDone = false;
+    }
+    
+    public LocalDateTime getDate() {
+        return null;
     }
 
     @Override

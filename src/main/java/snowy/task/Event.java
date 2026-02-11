@@ -31,6 +31,11 @@ public class Event extends Task {
         return this.toString() + " (from: " + this.start.format(formatter) + " to: " + this.end.format(formatter) + ")";
     }
 
+    @Override
+    public LocalDateTime getDate() {
+        return this.start;
+    }
+
     public LocalDateTime getStart() {
         return this.start;
     }

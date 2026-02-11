@@ -27,6 +27,11 @@ public class Deadline extends Task {
         return this.toString() + " (by: " + by.format(DateTimeFormatter.ofPattern("MMM  d yyyy HH:mm")) + ")";
     }
 
+    @Override
+    public LocalDateTime getDate() {
+        return this.by;
+    }
+
     public LocalDateTime getBy() {
         return this.by;
     }

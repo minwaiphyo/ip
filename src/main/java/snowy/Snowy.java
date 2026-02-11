@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import snowy.exception.SnowyException;
 import snowy.parser.Parser;
@@ -232,6 +234,17 @@ public class Snowy {
         return result.toString().trim();
     }
 
+    private String formatSortedTaskList() {
+        if (tasks.size() == 0) {
+            return "Woof! Your task list is empty!";
+        }
+
+        String taskLines = IntStream.range(0, tasks.getSortedTasks().size())
+                .mapToObj(i -> (i + 1) + ". " + tasks.getSortedTasks().get(i).printDetailed())
+                .collect(Collectors.joining("\n"));
+        return "Here are your tasks in sorted order:\n" + taskLines;
+    }
+
     public String getWelcome() {
         return "Woof woof! I'm Snowy!\n";
     }
@@ -270,6 +283,8 @@ public class Snowy {
 
                 case "find":
                     return handleFind(input);
+                case "sortedlist":
+                    return formatSortedTaskList();
 
                 default:
                     return "Woof! I don't understand that command. :(";
