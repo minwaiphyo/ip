@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 import snowy.exception.SnowyException;
 import snowy.task.Deadline;
@@ -90,12 +91,11 @@ public class Storage {
     public void save(ArrayList<Task> tasks) throws SnowyException {
         assert tasks != null : "Task list to save should not be null";
         try {
+            String content = tasks.stream()
+                    .map(this::taskToString)
+                    .collect(Collectors.joining("\n"));
             FileWriter writer = new FileWriter(filePath);
-
-            for (Task task : tasks) {
-                writer.write(taskToString(task) + "\n");
-            }
-
+            writer.write(content);
             writer.close();
         } catch (IOException e) {
             throw new SnowyException("Error saving tasks: " + e.getMessage());

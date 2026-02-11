@@ -224,6 +224,7 @@ public class Snowy {
         if (tasks.size() == 0) {
             return "Woof! Your task list is empty!";
         }
+
         StringBuilder result = new StringBuilder("Here are the tasks in your list:\n");
         for (int i = 0; i < tasks.size(); i++) {
             result.append((i + 1)).append(". ").append(tasks.getTask(i).printDetailed()).append("\n");
