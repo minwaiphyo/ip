@@ -42,7 +42,7 @@ public class Task {
     public void markAsNotDone() {
         this.isDone = false;
     }
-    
+
     public LocalDateTime getDate() {
         return null;
     }

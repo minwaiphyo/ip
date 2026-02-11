@@ -1,7 +1,9 @@
 package snowy.tasklist;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.stream.Collectors;
 
 import snowy.exception.SnowyException;
@@ -9,9 +11,6 @@ import snowy.task.Deadline;
 import snowy.task.Event;
 import snowy.task.Task;
 import snowy.task.ToDo;
-
-import java.time.LocalDateTime;
-import java.util.Comparator;
 
 
 /**
@@ -128,9 +127,15 @@ public class TaskList {
     }
 
     private int getTaskTypeOrder(Task task) {
-        if (task instanceof ToDo) return 0;
-        if (task instanceof Deadline) return 1;
-        if (task instanceof Event) return 2;
+        if (task instanceof ToDo) {
+            return 0;
+        }
+        if (task instanceof Deadline) {
+            return 1;
+        }
+        if (task instanceof Event) {
+            return 2;
+        }
         return 3;
     }
 
