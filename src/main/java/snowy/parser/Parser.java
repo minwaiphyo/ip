@@ -32,8 +32,10 @@ public class Parser {
         if (spaceIndex == -1) {
             return trimmed; // Single word command
         }
+        String command = trimmed.substring(0, spaceIndex);
+        assert !command.isEmpty() : "Parse command should never be empty";
 
-        return trimmed.substring(0, spaceIndex);
+        return command;
     }
 
     /**
@@ -49,7 +51,9 @@ public class Parser {
         }
 
         try {
-            return Integer.parseInt(fullCommand.substring(commandLength).trim()) - 1;
+            int index = Integer.parseInt(fullCommand.substring(commandLength).trim()) - 1;
+            assert index >= 0 : "Task index should be non-negative after conversion: " + index;
+            return index;
         } catch (NumberFormatException e) {
             throw new SnowyException("Woof! Please provide a valid task number!");
         }
@@ -70,6 +74,9 @@ public class Parser {
         if (description.isEmpty()) {
             throw new SnowyException("Woof woof! The description of a snowy.task.ToDo cannot be empty!");
         }
+
+        assert !description.isEmpty() : "Todo description should not be empty at this point";
+        assert description.equals(description.trim()) : "Description should already be trimmed";
 
         return description;
     }
@@ -101,6 +108,10 @@ public class Parser {
             throw new SnowyException("Woof! Both the description and deadline are required!");
         }
 
+        assert parts.length == 2: "Deadline split should produce exactly 2 parts";
+        assert !parts[0].trim().isEmpty() : "Deadline description should not be empty";
+        assert !parts[1].trim().isEmpty() : "Deadline 'by' field should not be empty";
+
         return new String[]{parts[0], parts[1].trim()};
     }
 
@@ -130,6 +141,8 @@ public class Parser {
         if (parts.length < 3 || parts[0].trim().isEmpty() || parts[1].trim().isEmpty() || parts[2].trim().isEmpty()) {
             throw new SnowyException("Woof! Description, start time, and end time are all required!");
         }
+
+        assert parts.length == 3 : "Event split should produce exactly 3 parts";
 
         return new String[]{parts[0], parts[1].trim(), parts[2].trim()};
     }
