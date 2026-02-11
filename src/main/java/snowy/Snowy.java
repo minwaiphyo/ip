@@ -233,37 +233,37 @@ public class Snowy {
                     return "Sad puppy noises* Bye... Hope to play with you again soon!";
 
                 case "list":
-                    return formatTaskList();  // ← NEW HELPER METHOD
+                    return formatTaskList();
 
                 case "mark":
-                    return handleMark(input);  // ← NOW RETURNS STRING
+                    return handleMark(input);
 
                 case "unmark":
-                    return handleUnmark(input);  // ← NOW RETURNS STRING
+                    return handleUnmark(input);
 
                 case "todo":
-                    return handleTodo(input);  // ← NOW RETURNS STRING
+                    return handleTodo(input);
 
                 case "deadline":
-                    return handleDeadline(input);  // ← NOW RETURNS STRING
+                    return handleDeadline(input);
 
                 case "event":
-                    return handleEvent(input);  // ← NOW RETURNS STRING
+                    return handleEvent(input);
 
                 case "delete":
-                    return handleDelete(input);  // ← NOW RETURNS STRING
+                    return handleDelete(input);
 
                 case "on":
-                    return handleOn(input);  // ← NOW RETURNS STRING
+                    return handleOn(input);
 
                 case "find":
-                    return handleFind(input);  // ← NOW RETURNS STRING
+                    return handleFind(input);
 
                 default:
                     return "Woof! I don't understand that command. :(";
             }
         } catch (SnowyException e) {
-            return e.getMessage();  // ← RETURN ERROR MESSAGE
+            return e.getMessage();
         } catch (Exception e) {
             return "Woof! Something went wrong: " + e.getMessage();
         }
