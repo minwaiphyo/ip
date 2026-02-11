@@ -6,8 +6,8 @@ package snowy.task;
  * This is the base class for all task types in the Snowy chatbot.
  */
 public class Task {
-    protected String description;
-    protected  boolean isDone;
+    private String description;
+    private  boolean isDone;
 
     /**
      * Creates a new Task with the given description.

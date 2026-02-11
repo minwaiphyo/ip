@@ -49,9 +49,7 @@ public class TaskList {
      * @throws SnowyException if index is invalid
      */
     public Task deleteTask(int index) throws SnowyException {
-        if (index < 0 || index >= tasks.size()) {
-            throw new SnowyException("Woof! That task number doesn't exist!");
-        }
+        validateIndex(index);
         Task removed = tasks.remove(index);
         assert removed != null : "Removed task should not be null";
         return removed;
@@ -64,9 +62,7 @@ public class TaskList {
      * @throws SnowyException if index is invalid
      */
     public Task getTask(int index) throws SnowyException {
-        if (index < 0 || index >= tasks.size()) {
-            throw new SnowyException("Woof! That task number doesn't exist!");
-        }
+        validateIndex(index);
         assert index >= 0 && index < tasks.size() : "Index must be valid after bounds check";
         return tasks.get(index);
     }
@@ -77,9 +73,7 @@ public class TaskList {
      * @throws SnowyException if index is invalid
      */
     public void markTask(int index) throws SnowyException {
-        if (index < 0 || index >= tasks.size()) {
-            throw new SnowyException("Woof woof! That task number doesn't exist!");
-        }
+        validateIndex(index);
         tasks.get(index).markAsDone();
     }
 
@@ -89,9 +83,7 @@ public class TaskList {
      * @throws SnowyException if index is invalid
      */
     public void unmarkTask(int index) throws SnowyException {
-        if (index < 0 || index >= tasks.size()) {
-            throw new SnowyException("Woof woof! That number doesn't exist!");
-        }
+        validateIndex(index);
         tasks.get(index).markAsNotDone();
     }
 
@@ -154,5 +146,17 @@ public class TaskList {
         }
         assert matchingTasks != null : "findTasks should always return a list, never null";
         return matchingTasks;
+    }
+
+    /**
+     * Validates whether the specified index exists in tasks
+     *
+     * @param index The task index to validate
+     * @throws SnowyException if the index is invalid
+     */
+    private void validateIndex(int index) throws SnowyException {
+        if (index < 0 || index >= tasks.size()) {
+            throw new SnowyException("Woof! That task number doesn't exist!");
+        }
     }
 }
