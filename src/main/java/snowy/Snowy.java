@@ -227,7 +227,7 @@ public class Snowy {
     public String getResponse(String input) {
         try {
             String command = Parser.parseCommand(input);
-
+            assert command != null && !command.isEmpty() : "Parsed command should never be null or empty";
             switch (command) {
                 case "bye":
                     return "Sad puppy noises* Bye... Hope to play with you again soon!";

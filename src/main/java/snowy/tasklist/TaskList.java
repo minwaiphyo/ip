@@ -38,6 +38,7 @@ public class TaskList {
      * @param task Task to add
      */
     public void addTask(Task task) {
+        assert task != null : "Cannot add a null task to the list";
         tasks.add(task);
     }
 
@@ -51,7 +52,9 @@ public class TaskList {
         if (index < 0 || index >= tasks.size()) {
             throw new SnowyException("Woof! That task number doesn't exist!");
         }
-        return tasks.remove(index);
+        Task removed = tasks.remove(index);
+        assert removed != null : "Removed task should not be null";
+        return removed;
     }
 
     /**
@@ -64,6 +67,7 @@ public class TaskList {
         if (index < 0 || index >= tasks.size()) {
             throw new SnowyException("Woof! That task number doesn't exist!");
         }
+        assert index >= 0 && index < tasks.size() : "Index must be valid after bounds check";
         return tasks.get(index);
     }
 
@@ -148,7 +152,7 @@ public class TaskList {
                 matchingTasks.add(task);
             }
         }
-
+        assert matchingTasks != null : "findTasks should always return a list, never null";
         return matchingTasks;
     }
 }

@@ -88,6 +88,7 @@ public class Storage {
      * @throws SnowyException if there's an error saving tasks
      */
     public void save(ArrayList<Task> tasks) throws SnowyException {
+        assert tasks != null : "Task list to save should not be null";
         try {
             FileWriter writer = new FileWriter(filePath);
 
@@ -142,6 +143,7 @@ public class Storage {
 
             if (task != null && isDone) {
                 task.markAsDone();
+                assert task.isDone() : "Task should be marked done after markAsDone()";
             }
 
             return task;
@@ -158,6 +160,7 @@ public class Storage {
      * @return String representation for file
      */
     private String taskToString(Task task) {
+        assert task != null : "Cannot convert null task to string";
         String isDone = task.isDone() ? "1" : "0";
 
         if (task instanceof ToDo) {
