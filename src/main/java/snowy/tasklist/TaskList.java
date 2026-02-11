@@ -7,6 +7,7 @@ import snowy.task.Task;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Manages the task list for the Snowy chatbot.
@@ -117,25 +118,30 @@ public class TaskList {
      * @return ArrayList of tasks on that date
      */
     public ArrayList<Task> getTasksOnDate(LocalDate date) {
-        ArrayList<Task> matchingTasks = new ArrayList<>();
+        return tasks.stream()
+                .filter(task -> isTaskOnDate(task, date))
+                .collect(Collectors.toCollection(ArrayList::new));
+    }
 
-        for (Task task : tasks) {
-            if (task instanceof Deadline) {
-                Deadline deadline = (Deadline) task;
-                if (deadline.getBy().toLocalDate().equals(date)) {
-                    matchingTasks.add(task);
-                }
-            } else if (task instanceof Event) {
-                Event event = (Event) task;
-                LocalDate fromDate = event.getStart().toLocalDate();
-                LocalDate toDate = event.getEnd().toLocalDate();
-                if (!date.isBefore(fromDate) && !date.isAfter(toDate)) {
-                    matchingTasks.add(task);
-                }
-            }
+    /**
+     * Checks whether a task falls on the specified date.
+     * For a Deadline, the task matches if its due date equals the given date.
+     * For an Event, the task matches if the given date falls within its
+     * start and end dates (inclusive). Other task types never match.
+     *
+     * @param task The task to check.
+     * @param date The date to check against.
+     * @return true if the task occurs on the given date, false otherwise.
+     */
+    private boolean isTaskOnDate(Task task, LocalDate date) {
+        if (task instanceof Deadline deadline) {
+            return deadline.getBy().toLocalDate().equals(date);
         }
-
-        return matchingTasks;
+        if (task instanceof Event event) {
+            return !date.isBefore(event.getStart().toLocalDate())
+                    && !date.isAfter(event.getEnd().toLocalDate());
+        }
+        return false;
     }
 
     /**
@@ -145,14 +151,8 @@ public class TaskList {
      * @return ArrayList of tasks containing the keyword
      */
     public ArrayList<Task> findTasks(String keyword) {
-        ArrayList<Task> matchingTasks = new ArrayList<>();
-
-        for (Task task : tasks) {
-            if (task.getDescription().contains(keyword)) {
-                matchingTasks.add(task);
-            }
-        }
-        assert matchingTasks != null : "findTasks should always return a list, never null";
-        return matchingTasks;
+        return tasks.stream()
+                .filter(task -> task.getDescription().contains(keyword))
+                .collect(Collectors.toCollection(ArrayList::new));
     }
 }
