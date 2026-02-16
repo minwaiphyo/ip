@@ -35,6 +35,9 @@ public class MainWindow extends AnchorPane {
     @FXML
     public void initialize() {
         scrollPane.vvalueProperty().bind(dialogContainer.heightProperty());
+        // Make dialog container width follow the scroll pane so dialog boxes resize
+        dialogContainer.prefWidthProperty().bind(scrollPane.widthProperty().subtract(20));
+        dialogContainer.setFillWidth(true);
     }
 
     /**
