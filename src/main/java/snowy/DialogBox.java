@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 
 /**
  * Represents a dialog box in the chat interface.
@@ -49,6 +50,11 @@ public class DialogBox extends HBox {
 
         dialog.setText(text);
         displayPicture.setImage(img);
+
+        dialog.setWrapText(true);
+        dialog.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(dialog, Priority.ALWAYS);
+        dialog.maxWidthProperty().bind(this.widthProperty().subtract(displayPicture.fitWidthProperty()).subtract(40));
     }
 
     /**
@@ -61,6 +67,7 @@ public class DialogBox extends HBox {
         Collections.reverse(tmp);
         getChildren().setAll(tmp);
         setAlignment(Pos.TOP_LEFT);
+        dialog.getStyleClass().add("reply-label");
     }
 
     /**
