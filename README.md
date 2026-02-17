@@ -150,8 +150,9 @@ src/
 │   │       ├── tasklist/           # Task list management
 │   │       └── exception/          # Custom exceptions
 │   └── resources/
-│       ├── view/                   # FXML layout files
+│       ├── css/                   #  CSS files
 │       └── images/                 # UI images
+│       └── view/                   # FXML layout files
 └── test/
     └── java/
         └── snowy/                  # JUnit tests
