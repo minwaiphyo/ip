@@ -69,11 +69,11 @@ public class Parser {
      * @throws SnowyException if description is empty
      */
     public static String parseTodoDescription(String fullCommand) throws SnowyException {
+        String errorMsg = "Woof woof! The description of a ToDo cannot be empty!";
         if (fullCommand.trim().equals("todo")) {
-            throw new SnowyException("Woof woof! The description of a snowy.task.ToDo cannot be empty!");
+            throw new SnowyException(errorMsg);
         }
 
-        String errorMsg = "Woof woof! The description of a ToDo cannot be empty!";
         String description = extractArgument(fullCommand, 5, errorMsg);
 
         assert !description.isEmpty() : "Todo description should not be empty at this point";
