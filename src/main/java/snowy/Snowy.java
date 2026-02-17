@@ -247,7 +247,7 @@ public class Snowy {
     }
 
     public String getWelcome() {
-        return "Woof woof! I'm Snowy!\n";
+        return "Woof woof! I'm Snowy! How can I help you?\n";
     }
 
     public String getResponse(String input) {
