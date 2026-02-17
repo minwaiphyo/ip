@@ -63,6 +63,14 @@ public class MainWindow extends AnchorPane {
     @FXML
     private void handleUserInput() {
         String input = userInput.getText();
+
+        // Closes the application with goodbye message upon bye command
+        if (input.trim().equalsIgnoreCase("bye")) {
+            javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(1));
+            delay.setOnFinished(event -> javafx.application.Platform.exit());
+            delay.play();
+        }
+
         String response = snowy.getResponse(input);
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
