@@ -31,7 +31,7 @@ public class Snowy {
     private static final int MARK_CMD_LENGTH = 5; // "mark "
     private static final int UNMARK_CMD_LENGTH = 7; // "unmark "
     private static final int DELETE_CMD_LENGTH = 7; // "delete "
-    private static final DateTimeFormatter DATE_DISPLAY_FORMAT = DateTimeFormatter.ofPattern("MMM DD YYYY");
+    private static final DateTimeFormatter DATE_DISPLAY_FORMAT = DateTimeFormatter.ofPattern("MMM dd yyyy");
     private final Storage storage;
     private TaskList tasks;
 
