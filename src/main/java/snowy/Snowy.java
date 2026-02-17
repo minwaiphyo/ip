@@ -211,15 +211,26 @@ public class Snowy {
      */
     private String handleFind(String input) throws SnowyException {
         String keyword = Parser.parseFindKeyword(input);
-        ArrayList<Task> matchingTasks = tasks.findTasks(keyword);
-        if (matchingTasks.isEmpty()) {
+
+        if (tasks.size() == 0) {
             return "Woof! No matching tasks found in your list.";
         }
 
         StringBuilder result = new StringBuilder("Here are the matching tasks in your list:\n");
-        for (int i = 0; i < matchingTasks.size(); i++) {
-            result.append((i + 1)).append(". ").append(matchingTasks.get(i).printDetailed()).append("\n");
+        boolean found = false;
+
+        for (int i = 0; i < tasks.size(); i++) {
+            Task task = tasks.getTask(i);
+            if (task.getDescription().toLowerCase().contains(keyword.toLowerCase())) {
+                result.append((i + 1)).append(". ").append(task.printDetailed()).append("\n");
+                found = true;
+            }
         }
+
+        if (!found) {
+            return "Woof! No matching tasks found in your list.";
+        }
+
         return result.toString().trim();
     }
 
