@@ -114,6 +114,7 @@ on 2024-12-25
 bye
 ```
 
+[//]: # (Claude AI was used here to generate the command summary)
 ## Command Summary
 
 | Command | Format | Example |
@@ -133,6 +134,7 @@ bye
 **Date format:** `yyyy-MM-dd` (e.g., 2024-12-25)  
 **Time format:** `HHmm` (e.g., 1800 for 6:00 PM)
 
+[//]: # (Claude AI was used here to generate the project structure tree)
 ## Project Structure
 ```
 src/
