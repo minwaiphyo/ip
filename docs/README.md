@@ -1,4 +1,4 @@
-# Snowy Project
+# Snowy
 
 Snowy is a task management chatbot application that helps you keep track of todos, deadlines, and events. It's named after the pet dog of the famous comic character TinTin!
 
